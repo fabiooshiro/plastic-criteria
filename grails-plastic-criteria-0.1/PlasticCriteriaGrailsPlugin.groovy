@@ -7,17 +7,18 @@ class PlasticCriteriaGrailsPlugin {
     def dependsOn = [:]
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
-        'grails-app/views/error.gsp',
-		'grails-app/domain/plastic/criteria/Artist.groovy',
-		'grails-app/domain/plastic/criteria/Portrait.groovy'
+        "grails-app/views/error.gsp",
+		//'grails-app/domain/plastic/criteria/Artist.groovy',
+		//'grails-app/domain/plastic/criteria/Portrait.groovy'
+		
     ]
 
     // TODO Fill in these fields
     def title = "Plastic Criteria Plugin" // Headline display name of the plugin
-    def author = "Fabio Issamu Oshiro"
+    def author = "Your name"
     def authorEmail = ""
     def description = '''\
-Mock Grails Criteria for Unit Tests
+Brief summary/description of the plugin.
 '''
 
     // URL to the plugin's documentation
