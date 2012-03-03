@@ -10,6 +10,10 @@ public class Portrait {
 	
 	String color
 	
+	String toString(){
+		"${name} (id: ${id})"
+	}
+	
 	static constraints = {
 		color nullable: true
 		value nullable: true

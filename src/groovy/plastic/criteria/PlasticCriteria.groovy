@@ -18,16 +18,11 @@ public class PlasticCriteria {
 		'lt':{ _instanceValue  < _criteriaValue },
 		'gt':{ _instanceValue  > _criteriaValue },
 		'ge':{ _instanceValue >= _criteriaValue },
-		'eq':{
-			if(_critOptions?.ignoreCase){
-				_instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()
-			}else{
-				_instanceValue == _criteriaValue
-			} 
-		},
+		'eq':{ (_critOptions?.ignoreCase) ? _instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: _instanceValue == _criteriaValue },
 		'in':{ _instanceValue in _criteriaValue },
 		'ne':{ _instanceValue != _criteriaValue },
 		'ilike':{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
+		'like':{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
 		'isNull':{ _instanceValue == null },
 		'isNotNull':{ _instanceValue != null }
 	]
