@@ -22,30 +22,33 @@ grails install-plugin grails-plastic-criteria-0.1.zip
 package plastic.test
 
 import grails.test.mixin.*
-import org.junit.*
-import static plastic.criteria.PlasticCriteria.*;
+
+// import mockCriteria() static method
+import static plastic.criteria.PlasticCriteria.* 
 
 @TestFor(Product)
 class ProductTests {
-  
+	
     void testSomething() {
 		new Product(name: 'Foo', value: 10).save()
 		new Product(name: 'Foo', value: 20).save()
 		new Product(name: 'Bar', value: 200).save()
 		new Product(name: 'Bar', value: 100).save()
 		
-		mockCriteria([Product])
+		// replace default criteria mock
+		mockCriteria([Product]) 
 		
 		def results = Product.withCriteria{
 			projections{
+				groupProperty('name') // now you have groupProperty
 				sum('value')
-				groupProperty('name')
 			}
 		}
 		
-		assert [[30, 'Foo'], [300, 'Bar']]
+		assert [['Foo', 30 ], ['Bar', 300]] == results
     }
 }
+
 
 ```
 just
