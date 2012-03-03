@@ -12,12 +12,19 @@ public class PlasticCriteria {
 	
 	def _instanceValue
 	def _criteriaValue
+	def _critOptions
 	def theImplementations = [
 		'le':{ _instanceValue <= _criteriaValue },
 		'lt':{ _instanceValue  < _criteriaValue },
 		'gt':{ _instanceValue  > _criteriaValue },
 		'ge':{ _instanceValue >= _criteriaValue },
-		'eq':{ _instanceValue == _criteriaValue },
+		'eq':{
+			if(_critOptions?.ignoreCase){
+				_instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()
+			}else{
+				_instanceValue == _criteriaValue
+			} 
+		},
 		'in':{ _instanceValue in _criteriaValue },
 		'ne':{ _instanceValue != _criteriaValue },
 		'ilike':{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
@@ -96,7 +103,7 @@ public class PlasticCriteria {
 	
 	def methodMissing(String name, args){
 		if(theImplementations.containsKey(name)){
-			_leCriticalList.ls.add([cp: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null')])
+			_leCriticalList.ls.add([cp: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
 			if(!(args[0] instanceof Closure)) throw new RuntimeException("metodo ${name} nao foi implementado")
 			def fc = new PlasticCriteria(this._clazz, name)
@@ -186,6 +193,7 @@ public class PlasticCriteria {
 				if(cri.cp){
 					_criteriaValue = cri.val
 					_instanceValue = obj
+					_critOptions = cri.opt
 					cri.prop.split('\\.').each{ _instanceValue = it == 'class' ? _instanceValue.class.name : _instanceValue."$it"	}
 					return !theImplementations[cri.cp]()
 				}else{
@@ -197,6 +205,7 @@ public class PlasticCriteria {
 				if(cri.cp){
 					_criteriaValue = cri.val
 					_instanceValue = obj
+					_critOptions = cri.opt
 					cri.prop.split('\\.').each{ _instanceValue = it == 'class' ? _instanceValue.class.name : _instanceValue."$it"	}
 					return theImplementations[cri.cp]()
 				}else{

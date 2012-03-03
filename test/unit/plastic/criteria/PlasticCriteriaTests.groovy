@@ -15,7 +15,7 @@ public class PlasticCriteriaTests {
 	@Before
 	void setUp(){
 		mockCriteria([Artist, Portrait])
-		artitst = new Artist(name: 'default').save()
+		artitst = new Artist(name: 'Brilhante').save()
 	}
 	
 	void testGroupProperty() {
@@ -100,5 +100,16 @@ public class PlasticCriteriaTests {
 			max('value')
 		}
 		assert 3.0 == res
+	}
+	
+	void testIgnoreCase(){
+		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
+		def b = new Portrait(artist: artitst, name: 'Soleil Levant', value: 1.0).save()
+		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 1.0).save()
+		def results = Portrait.withCriteria{
+			eq('name', 'SOLEIL LEVANT', [ignoreCase: true])
+		}
+		
+		assert [a, b] == results
 	}
 }
