@@ -14,17 +14,17 @@ public class PlasticCriteria {
 	def _criteriaValue
 	def _critOptions
 	def theImplementations = [
-		'le':{ _instanceValue <= _criteriaValue },
-		'lt':{ _instanceValue  < _criteriaValue },
-		'gt':{ _instanceValue  > _criteriaValue },
-		'ge':{ _instanceValue >= _criteriaValue },
-		'eq':{ (_critOptions?.ignoreCase) ? _instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: _instanceValue == _criteriaValue },
-		'in':{ _instanceValue in _criteriaValue },
-		'ne':{ _instanceValue != _criteriaValue },
-		'ilike':{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
-		'like':{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
-		'isNull':{ _instanceValue == null },
-		'isNotNull':{ _instanceValue != null }
+		"le":{ _instanceValue <= _criteriaValue },
+		"lt":{ _instanceValue  < _criteriaValue },
+		"gt":{ _instanceValue  > _criteriaValue },
+		"ge":{ _instanceValue >= _criteriaValue },
+		"eq":{ (_critOptions?.ignoreCase) ? _instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: _instanceValue == _criteriaValue },
+		"in":{ _instanceValue in _criteriaValue },
+		"ne":{ _instanceValue != _criteriaValue },
+		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
+		"like":{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
+		"isNull":{ _instanceValue == null },
+		"isNotNull":{ _instanceValue != null }
 	]
 	
 	public PlasticCriteria(clazz){
@@ -111,22 +111,25 @@ public class PlasticCriteria {
 		}
 	}
 	
-	def and(clos){
+	def theAndOrNotPush(tp, clos){
 		def thePersistenceOfMemory = _leCriticalList
-		_leCriticalList = [tp: 'and', ls: []]
+		_leCriticalList = [tp: tp, ls: []]
 		thePersistenceOfMemory.ls.add(_leCriticalList)
 		clos.delegate = this
 		clos()
 		_leCriticalList = thePersistenceOfMemory
 	}
 	
+	def and(clos){
+		theAndOrNotPush('and', clos)
+	}
+	
 	def or(clos){
-		def thePersistenceOfMemory = _leCriticalList
-		_leCriticalList = [tp: 'or', ls: []]
-		thePersistenceOfMemory.ls.add(_leCriticalList)
-		clos.delegate = this
-		clos()
-		_leCriticalList = thePersistenceOfMemory
+		theAndOrNotPush('or', clos)
+	}
+	
+	def not(clos){
+		theAndOrNotPush('not', clos)
 	}
 	
 	def list(clos){
@@ -207,6 +210,8 @@ public class PlasticCriteria {
 					return whereIsMyMind(cri, obj)
 				}
 			}
+		} else if(criList.tp == 'not'){
+			return !whereIsMyMind([tp: 'and', ls: criList.ls], obj)
 		} else{
 			throw new RuntimeException("Foo bar")
 		}

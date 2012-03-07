@@ -122,4 +122,16 @@ public class PlasticCriteriaTests {
 		}
 		assert [a, b] == results
 	}
+	
+	void testNot(){
+		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
+		def b = new Portrait(artist: artitst, name: 'Soleil Levant', value: 1.0).save()
+		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 1.0).save()
+		def results = Portrait.withCriteria{
+			not{
+				like('name', 'Soleil%')
+			}
+		}
+		assert [c] == results
+	}
 }
