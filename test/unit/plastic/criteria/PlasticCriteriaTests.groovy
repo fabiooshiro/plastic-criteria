@@ -134,4 +134,16 @@ public class PlasticCriteriaTests {
 		}
 		assert [c] == results
 	}
+    
+    void testMissingMethodException(){
+        try{
+            Portrait.withCriteria{
+                myMissingMethod('name', 'Bach')
+            }
+            fail('where is that method?')
+        }catch(MissingMethodException e){
+            assert 'No signature of method: plastic.criteria.PlasticCriteria.myMissingMethod() is applicable for argument types: (java.lang.String, java.lang.String) values: [name, Bach]' == e.message
+        }
+    }
+
 }

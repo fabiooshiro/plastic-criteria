@@ -100,7 +100,7 @@ public class PlasticCriteria {
 		if(theImplementations.containsKey(name)){
 			_leCriticalList.ls.add([cp: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
-			if(!(args[0] instanceof Closure)) throw new RuntimeException("metodo ${name} nao foi implementado")
+			if(!(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
 			def fc = new PlasticCriteria(this._clazz, name)
 			args[0].resolveStrategy = Closure.DELEGATE_FIRST
 			args[0].delegate = fc
@@ -213,7 +213,7 @@ public class PlasticCriteria {
 		} else if(criList.tp == 'not'){
 			return !whereIsMyMind([tp: 'and', ls: criList.ls], obj)
 		} else{
-			throw new RuntimeException("Foo bar")
+			throw new RuntimeException("Operation '${criList.tp}' not implemented.")
 		}
 	}
 
