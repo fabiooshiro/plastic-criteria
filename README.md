@@ -9,11 +9,23 @@ http://sam.zoy.org/wtfpl/COPYING
 
 # Installation
 
-Download latest version https://github.com/fabiooshiro/plastic-criteria/downloads
-and run
+For grails 1.3.x
 
 ```
-grails install-plugin grails-plastic-criteria-0.1.zip
+grails install-plugin plastic-criteria
+```
+
+Grails 2.0.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
+
+```groovy
+    // (...)
+    plugins {
+        // (...) another plugins
+        
+        // add this line
+        test ":plastic-criteria:0.1"
+    }
+    // (...)
 ```
 
 # Sample usage
