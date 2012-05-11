@@ -1,5 +1,6 @@
 target
 *.class
+*.swp
 *.log
 *.zip
 .DS_Store
