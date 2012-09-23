@@ -96,11 +96,15 @@ public class PlasticCriteria {
 		_orders.add("${prop} ${order}")
 	}
 	
+	def rowCount(){
+		_props.add("rowCount ")
+	}
+	
 	def methodMissing(String name, args){
 		if(theImplementations.containsKey(name)){
 			_leCriticalList.ls.add([cp: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
-			if(!(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
+			if(!args || !(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
 			def fc = new PlasticCriteria(this._clazz, name)
 			args[0].resolveStrategy = Closure.DELEGATE_FIRST
 			args[0].delegate = fc
@@ -149,6 +153,8 @@ public class PlasticCriteria {
 						def min
 						vls.each{ if(min == null || it."${prop.substring(4)}" < min) min = it."${prop.substring(4)}" }
 						rsItem.add(min)
+					}else if(prop.startsWith('rowCount ')){
+						rsItem.add(vls.size())
 					}else if(prop.startsWith('max ')){
 						def max
 						vls.each{ if(max == null || it."${prop.substring(4)}" > max) max = it."${prop.substring(4)}" }

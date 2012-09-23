@@ -1,4 +1,4 @@
-<plugin name='plastic-criteria' version='0.1' grailsVersion='2.0 &gt; *'>
+<plugin name='plastic-criteria' version='0.1' grailsVersion='1.3 &gt; *'>
   <author>Fabio Issamu Oshiro</author>
   <title>Plastic Criteria Plugin</title>
   <description>Mock Grails Criteria for Unit Tests
@@ -15,10 +15,6 @@
     <repository name='http://repo.grails.org/grails/core' url='http://repo.grails.org/grails/core/' />
     <repository name='grailsCore' url='http://svn.codehaus.org/grails/trunk/grails-plugins' />
     <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
-    <repository name='http://snapshots.repository.codehaus.org' url='http://snapshots.repository.codehaus.org/' />
-    <repository name='http://repository.codehaus.org' url='http://repository.codehaus.org/' />
-    <repository name='http://download.java.net/maven/2/' url='http://download.java.net/maven/2/' />
-    <repository name='http://repository.jboss.com/maven2/' url='http://repository.jboss.com/maven2/' />
   </repositories>
   <dependencies>
     <compile>
