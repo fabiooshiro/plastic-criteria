@@ -49,6 +49,11 @@ public class PlasticCriteria {
 			new PlasticCriteria(clazz)
 		}
 	}
+
+	def between(prop, firstValue, secondValue){
+		ge(prop, firstValue)
+		le(prop, secondValue)
+	}
 	
 	def listDistinct(cls){
 		

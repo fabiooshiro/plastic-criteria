@@ -174,4 +174,16 @@ public class PlasticCriteriaTests {
 		assert 1 == res.find{ it[1].name == 'Salvador' }[0]
 	}
 
+	void testBetween(){
+		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
+		def b = new Portrait(artist: artitst, name: 'Monalisa', value: 10.0).save()
+		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 5.0).save()
+		def res = Portrait.withCriteria{
+			between('value', 1, 7.0)
+		}
+		assert 2 == res.size()
+		assert a == res[0]
+		assert c == res[1]
+	}
+
 }
