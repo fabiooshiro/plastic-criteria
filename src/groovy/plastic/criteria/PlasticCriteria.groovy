@@ -24,7 +24,8 @@ public class PlasticCriteria {
 		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
 		"like":{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
 		"isNull":{ _instanceValue == null },
-		"isNotNull":{ _instanceValue != null }
+		"isNotNull":{ _instanceValue != null },
+		"eqProperty":{ _instanceValue == _criteriaValue }
 	]
 	
 	public PlasticCriteria(clazz){
@@ -107,7 +108,7 @@ public class PlasticCriteria {
 	
 	def methodMissing(String name, args){
 		if(theImplementations.containsKey(name)){
-			_leCriticalList.ls.add([cp: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
+			_leCriticalList.ls.add([criteriaName: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
 			if(!args || !(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
 			def fc = new PlasticCriteria(this._clazz, name)
@@ -152,14 +153,14 @@ public class PlasticCriteria {
 				_props.each{ prop ->
 					if(prop.startsWith('sum ')){
 						rsItem.add(vls.sum(0.0){it."${prop.substring(4)}"})
+					}else if(prop.startsWith('rowCount ')){
+						rsItem.add(vls.size())
 					}else if(prop.startsWith('avg ')){
 						rsItem.add(vls.sum(0.0){it."${prop.substring(4)}"} / vls.size())
 					}else if(prop.startsWith('min ')){
 						def min
 						vls.each{ if(min == null || it."${prop.substring(4)}" < min) min = it."${prop.substring(4)}" }
 						rsItem.add(min)
-					}else if(prop.startsWith('rowCount ')){
-						rsItem.add(vls.size())
 					}else if(prop.startsWith('max ')){
 						def max
 						vls.each{ if(max == null || it."${prop.substring(4)}" > max) max = it."${prop.substring(4)}" }
@@ -196,42 +197,36 @@ public class PlasticCriteria {
 		return ls
 	}
 	
-	def whereIsMyMind(criList, obj){
+	def _runCriteria(cri, obj){
+		if(cri.criteriaName.endsWith('Property')){
+			_criteriaValue = obj."${cri.val}"
+		}else{
+			_criteriaValue = cri.val
+		}
+		_instanceValue = obj
+		_critOptions = cri.opt
+		cri.prop.split('\\.').each{ _instanceValue = it == 'class' ? _instanceValue.class.name : _instanceValue."$it"	}
+		return theImplementations[cri.criteriaName]()
+	}
+	
+	def knokinOnHeavensDoor(criList, obj){
+		def gotoParadise
 		if(criList.tp == 'and'){
-			return !criList.ls.any{ cri ->
-				if(cri.cp){
-					_criteriaValue = cri.val
-					_instanceValue = obj
-					_critOptions = cri.opt
-					cri.prop.split('\\.').each{ _instanceValue = it == 'class' ? _instanceValue.class.name : _instanceValue."$it"	}
-					return !theImplementations[cri.cp]()
-				}else{
-					return !whereIsMyMind(cri, obj)
-				}
-			}
+			gotoParadise = !criList.ls.any{ it.criteriaName ? !_runCriteria(it, obj) : !knokinOnHeavensDoor(it, obj) }
 		} else if(criList.tp == 'or'){
-			return criList.ls.any{ cri ->
-				if(cri.cp){
-					_criteriaValue = cri.val
-					_instanceValue = obj
-					_critOptions = cri.opt
-					cri.prop.split('\\.').each{ _instanceValue = it == 'class' ? _instanceValue.class.name : _instanceValue."$it"	}
-					return theImplementations[cri.cp]()
-				}else{
-					return whereIsMyMind(cri, obj)
-				}
-			}
+			gotoParadise = criList.ls.any{ it.criteriaName ? _runCriteria(it, obj) : knokinOnHeavensDoor(it, obj) }
 		} else if(criList.tp == 'not'){
-			return !whereIsMyMind([tp: 'and', ls: criList.ls], obj)
+			gotoParadise = !knokinOnHeavensDoor([tp: 'and', ls: criList.ls], obj)
 		} else{
 			throw new RuntimeException("Operation '${criList.tp}' not implemented.")
 		}
+		return gotoParadise
 	}
 
 	def filteredList(){
 		def r = []
 		_clazz.list().each{ obj ->
-			if(whereIsMyMind(_leCriticalList, obj)){
+			if(knokinOnHeavensDoor(_leCriticalList, obj)){
 				r.add(obj)
 			}
 		}

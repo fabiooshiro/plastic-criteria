@@ -8,6 +8,8 @@ public class Portrait {
 	
 	BigDecimal value
 	
+	BigDecimal lastSoldPrice
+	
 	String color
 	
 	String toString(){
@@ -17,6 +19,7 @@ public class Portrait {
 	static constraints = {
 		color nullable: true
 		value nullable: true
+		lastSoldPrice nullable: true
 	}
 	
 }

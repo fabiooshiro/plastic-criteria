@@ -185,5 +185,17 @@ public class PlasticCriteriaTests {
 		assert a == res[0]
 		assert c == res[1]
 	}
+	
+	void testEqProperty(){
+		def soleill = new Portrait(value: 20.0, lastSoldPrice: 10.0, name: 'Soleil levant',artist: artitst ).save()
+		def monalis = new Portrait(value: 10.0, lastSoldPrice: 10.0, name: 'Monalisa', artist: artitst).save()
+		def madonna = new Portrait(value: 15.0, lastSoldPrice: 15.0, name: 'The Madonna of Port Lligat', artist: artitst).save()
+		def res = Portrait.withCriteria{
+			eqProperty('value', 'lastSoldPrice')
+		}
+		assert 2 == res.size()
+		assert monalis == res.first()
+		assert madonna == res.last()
+	}
 
 }
