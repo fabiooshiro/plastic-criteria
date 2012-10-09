@@ -25,7 +25,12 @@ public class PlasticCriteria {
 		"like":{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
 		"isNull":{ _instanceValue == null },
 		"isNotNull":{ _instanceValue != null },
-		"eqProperty":{ _instanceValue == _criteriaValue }
+		"eqProperty":{ _instanceValue == _criteriaValue },
+		"geProperty":{ _instanceValue >= _criteriaValue },
+		"leProperty":{ _instanceValue <= _criteriaValue},
+		"neProperty":{ _instanceValue != _criteriaValue },
+		"gtProperty":{ _instanceValue > _criteriaValue },
+		"ltProperty":{ _instanceValue < _criteriaValue }
 	]
 	
 	public PlasticCriteria(clazz){

@@ -198,4 +198,62 @@ public class PlasticCriteriaTests {
 		assert madonna == res.last()
 	}
 
+	void testGeProperty(){
+		def soleill = new Portrait(value: 20.0, lastSoldPrice: 10.0, name: 'Soleil levant',artist: artitst ).save()
+		def monalis = new Portrait(value: 10.0, lastSoldPrice: 9.0, name: 'Monalisa', artist: artitst).save()
+		def madonna = new Portrait(value: 15.0, lastSoldPrice: 19.0, name: 'The Madonna of Port Lligat', artist: artitst).save()
+		def res = Portrait.withCriteria{
+			geProperty('lastSoldPrice', 'value')
+		}
+
+		assert 1 == res.size()
+		assert madonna == res.first()
+	}
+
+	void testLeProperty(){
+		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
+		def monalis = new Portrait(value: 10.0, lastSoldPrice: 9.0, name: 'Monalisa', artist: artitst).save()
+		def madonna = new Portrait(value: 15.0, lastSoldPrice: 50.0, name: 'The Madonna of Port Lligat', artist: artitst).save()
+		def res = Portrait.withCriteria{
+			leProperty('lastSoldPrice','value')
+		}
+
+		assert 1 == res.size()
+		assert monalis == res.first()
+	}
+
+
+	void testNeProperty(){
+		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
+		def monalis = new Portrait(value: 10.0, lastSoldPrice: 10.0, name: 'Monalisa', artist: artitst).save()
+		def res = Portrait.withCriteria{
+			neProperty('value','lastSoldPrice')
+		}
+
+		assert 1 == res.size()
+		assert soleill == res.first()
+	}
+
+	void testGtProperty(){
+		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
+		def monalis = new Portrait(value: 10.0, lastSoldPrice: 19.0, name: 'Monalisa', artist: artitst).save()
+		def res = Portrait.withCriteria{
+			gtProperty('lastSoldPrice', 'value')
+		}
+
+		assert 2 == res.size()
+		assert soleill == res.first()
+		assert monalis == res.last()
+	}
+
+	void testLtProperty(){
+		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
+		def monalis = new Portrait(value: 30.0, lastSoldPrice: 19.0, name: 'Monalisa', artist: artitst).save()
+		def res = Portrait.withCriteria{
+			ltProperty('value', 'lastSoldPrice')
+		}
+
+		assert 1 == res.size()
+		assert soleill == res.first()
+	}
 }
