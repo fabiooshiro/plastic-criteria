@@ -4,6 +4,7 @@ public class PlasticCriteria {
 	def _clazz
 	def _maxRes
 	def _props = []
+	def _hasCalcProp = false
 	def _groupProps = []
 	def _orders = []
 	def _distinctProp
@@ -78,24 +79,33 @@ public class PlasticCriteria {
 	}
 	
 	def min(prop){
+		_hasCalcProp = true
 		_props.add("min $prop")
 	}
 	
 	def max(prop){
+		_hasCalcProp = true
 		_props.add("max $prop")
 	}
 	
 	def sum(prop){
+		_hasCalcProp = true
 		_props.add("sum $prop")
 	}
 	
 	def avg(prop){
+		_hasCalcProp = true
 		_props.add("avg $prop")
 	}
 	
 	def groupProperty(prop){
 		_groupProps.add(prop)
 		_props.add(prop)
+	}
+	
+	def rowCount(){
+		_hasCalcProp = true
+		_props.add("rowCount ")
 	}
 	
 	def projections(clos){
@@ -105,10 +115,6 @@ public class PlasticCriteria {
 	
 	def order(prop, order){
 		_orders.add("${prop} ${order}")
-	}
-	
-	def rowCount(){
-		_props.add("rowCount ")
 	}
 	
 	def methodMissing(String name, args){
@@ -189,7 +195,11 @@ public class PlasticCriteria {
 					extractProps(vls)
 				}
 			}else{
-				extractProps(ls)
+				if(_hasCalcProp){
+					extractProps(ls)
+				}else{
+					ls.each{ extractProps([it]) }
+				}
 			}
 			ls = rs
 		} else if(_distinctProp){

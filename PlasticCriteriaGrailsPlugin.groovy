@@ -1,6 +1,6 @@
 class PlasticCriteriaGrailsPlugin {
     // the plugin version
-    def version = "0.2"
+    def version = "0.3"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3 > *"
     // the other plugins this plugin depends on
@@ -9,7 +9,8 @@ class PlasticCriteriaGrailsPlugin {
     def pluginExcludes = [
         'grails-app/views/error.gsp',
 		'grails-app/domain/plastic/criteria/Artist.groovy',
-		'grails-app/domain/plastic/criteria/Portrait.groovy'
+		'grails-app/domain/plastic/criteria/Portrait.groovy',
+		'src/groovy/plastic/criteria/CriteriaDocTests.groovy'
     ]
 
     // TODO Fill in these fields
