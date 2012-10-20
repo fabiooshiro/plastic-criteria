@@ -71,3 +71,9 @@ and
 ```
 mockCriteria([Product])
 ```
+
+## Committers
+<a href="https://twitter.com/fabiooshiro">Sr. Oshiro</a>,
+<a href="http://www.facebook.com/MaxMustang23">Max Mustang</a>,
+<a href="https://twitter.com/dtuler">Danilo Tuler</a>
+
