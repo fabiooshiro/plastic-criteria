@@ -16,6 +16,24 @@ public class CriteriaDocTests {
 		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
 	}
 	
+	void test2xGroupProperty(){
+		def pablo = new Artist(name: 'Pablo').save()
+		def salvador = new Artist(name: 'Salvador').save()
+		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon 1", value: 10.00).save()
+		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon 2", value: 10.00).save()
+		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon 3", value: 10.00).save()
+		new Portrait(artist: salvador, name: "The Persistence of Memory 1", value: 20.00).save()
+		new Portrait(artist: salvador, name: "The Persistence of Memory 2", value: 20.00).save()
+		new Portrait(artist: salvador, name: "The Persistence of Memory 3", value: 20.00).save()
+		def artistValue = Portrait.withCriteria{
+			projections{
+				groupProperty('value')
+				groupProperty('artist')
+			}
+		}
+		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
+	}
+	
 	void testAnd(){
 		def pablo = new Artist(name: 'Pablo').save()
 		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00, color: 'orange').save()
