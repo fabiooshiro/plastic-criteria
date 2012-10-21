@@ -129,6 +129,12 @@ public class PlasticCriteria {
 			fc._leCriticalList.ls.each{ v ->
 				this._leCriticalList.ls.add(v)
 			}
+			fc._orders.each{
+				this._orders.add((name + '.' + it)) 
+			}
+			if(fc._distinctProp){
+				this._distinctProp = name + '.' + fc._distinctProp
+			}
 		}
 	}
 	
@@ -178,8 +184,7 @@ public class PlasticCriteria {
 						rsItem.add(max)
 					}else{
 						def gp = vls.first()
-						prop.split('\\.').each{ gp = gp."$it" }
-						rsItem.add(gp)
+						rsItem << _getProp(gp, prop)
 					}
 				}
 				rs.add(_props.size() == 1 ? rsItem[0] : rsItem)
@@ -187,9 +192,7 @@ public class PlasticCriteria {
 			if(_groupProps){
 				ls.groupBy{ item ->
 					_groupProps.collect{ groupProp ->
-						def gp = item
-						groupProp.split('\\.').each{ gp = gp."$it" }
-						return gp
+						_getProp(item, groupProp)
 					}
 				}.each{ k, vls ->
 					extractProps(vls)
@@ -205,7 +208,7 @@ public class PlasticCriteria {
 		} else if(_distinctProp){
 			def rs = []
 			ls.each{
-				if(!rs.contains(it."$_distinctProp")) rs.add(it."$_distinctProp")
+				if(!rs.contains(_getProp(it, _distinctProp))) rs.add(_getProp(it, _distinctProp))
 			}
 			ls = rs
 		}
@@ -218,9 +221,8 @@ public class PlasticCriteria {
 		}else{
 			_criteriaValue = cri.val
 		}
-		_instanceValue = obj
+		_instanceValue = _getProp(obj, cri.prop)
 		_critOptions = cri.opt
-		cri.prop.split('\\.').each{ _instanceValue = it == 'class' ? _instanceValue.class.name : _instanceValue."$it"	}
 		return theImplementations[cri.criteriaName]()
 	}
 	
@@ -238,6 +240,12 @@ public class PlasticCriteria {
 		return gotoParadise
 	}
 
+	def _getProp(obj, propertyName){
+		def res = obj
+		propertyName.split('\\.').each{ res = it == 'class' ? res.class.name : res."$it" }
+		return res
+	}
+	
 	def filteredList(){
 		def r = []
 		_clazz.list().each{ obj ->
@@ -249,12 +257,12 @@ public class PlasticCriteria {
 			def arr = it.split(' ')
 			def prop = arr[0]
 			def order = arr[1]
-			r.sort{a, b->
+			r.sort{ a, b->
 				try{
 					if(order == 'asc'){
-						return a."$prop" - b."$prop"
+						return _getProp(a, prop).compareTo(_getProp(b, prop))
 					} else {
-						return b."$prop" - a."$prop"
+						return _getProp(b, prop).compareTo(_getProp(a, prop))
 					}
 				}catch(e){
 					return 0

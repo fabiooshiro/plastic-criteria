@@ -6,6 +6,7 @@ public class CriteriaDocTests {
 		def pablo = new Artist(name: 'Pablo').save()
 		def salvador = new Artist(name: 'Salvador').save()
 		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00).save()
+		new Portrait(artist: pablo, name: "Les Noces de Pierrette", value: 22.00, color: 'blue').save()
 		new Portrait(artist: salvador, name: "The Persistence of Memory", value: 20.00).save()
 		def artistValue = Portrait.withCriteria{
 			projections{
@@ -13,7 +14,7 @@ public class CriteriaDocTests {
 				groupProperty('artist')
 			}
 		}
-		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
+		assert [[32.00, pablo], [20.00, salvador]] ==  artistValue
 	}
 	
 	void test2xGroupProperty(){
@@ -181,7 +182,7 @@ public class CriteriaDocTests {
 		def monet = new Artist(name: 'Monet').save()
 		def salvador = new Artist(name: 'Salvador').save()
 		def a = new Portrait(artist: monet, name: 'Soleil levant', value: 1.0).save()
-		def b = new Portrait(artist: monet, name: 'Soleil Levant', value: 1.0).save()
+		def b = new Portrait(artist: monet, name: 'Soleil Levant 2', value: 1.0).save()
 		def c = new Portrait(artist: salvador, name: 'The Madonna of Port Lligat', value: 1.0).save()
 		def res = Portrait.withCriteria{
 			projections{
@@ -341,6 +342,27 @@ public class CriteriaDocTests {
 		
 		assert 1 == rs.size()
 		assert [[monet, 3.0]] == rs
+	}
+	
+	void testOrderBy(){
+		def a = new Artist(name: 'Andreas Achenbach').save()
+		def c = new Artist(name: 'Constance Gordon-Cumming').save()
+		def b = new Artist(name: 'Botero').save()
+		new Portrait(artist: a, name: "Clearing Up—Coast of Sicily").save()
+		new Portrait(artist: c, name: "Indian Life at Mirror Lake").save()
+		new Portrait(artist: c, name: "Temporary Chimneys and Fire Fountains").save()
+		new Portrait(artist: b, name: "Botero's Cat").save()
+		def artistList = Portrait.withCriteria{
+			artist{
+				order('name', 'asc')
+			}
+			projections{
+				artist{
+					distinct('name')
+				}
+			}
+		}
+		assert ['Andreas Achenbach', 'Botero', 'Constance Gordon-Cumming'] == artistList
 	}
 	
 }
