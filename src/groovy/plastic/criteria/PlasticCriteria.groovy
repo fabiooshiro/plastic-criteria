@@ -162,7 +162,7 @@ public class PlasticCriteria {
 	def list(clos){
 		clos.delegate = this
 		clos()
-		def ls = filteredList()
+		def ls = _filteredList()
 		if(_props){
 			def rs = []
 			def extractProps = { vls ->
@@ -240,13 +240,25 @@ public class PlasticCriteria {
 		return gotoParadise
 	}
 
-	def _getProp(obj, propertyName){
+	def __getProperty(obj, propertyName){
 		def res = obj
 		propertyName.split('\\.').each{ res = it == 'class' ? res.class.name : res."$it" }
 		return res
 	}
+
+	def _getProp(obj, propertyName){
+		def res
+		if(propertyName instanceof List){
+			res = propertyName.collect{ pname ->
+				__getProperty(obj, pname)
+			}
+		} else {
+			res = __getProperty(obj, propertyName)
+		}
+		return res
+	}
 	
-	def filteredList(){
+	def _filteredList(){
 		def r = []
 		_clazz.list().each{ obj ->
 			if(knokinOnHeavensDoor(_leCriticalList, obj)){

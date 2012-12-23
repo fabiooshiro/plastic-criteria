@@ -365,4 +365,21 @@ public class CriteriaDocTests {
 		assert ['Andreas Achenbach', 'Botero', 'Constance Gordon-Cumming'] == artistList
 	}
 	
+	void testDistinctWithArrayParam(){
+		def b = new Artist(name: 'Tomie Oshiro').save()
+		new Portrait(artist: b, color: 'Ame', name: 'Cat').save() // Ame == yellow
+		new Portrait(artist: b, color: 'Blue', name: 'Fox').save()
+		new Portrait(artist: b, color: 'Ame', name: 'Cat').save()
+		new Portrait(artist: b, color: 'Blue', name: 'Cat').save()
+		def artistList = Portrait.withCriteria{
+			projections{
+				distinct(['color', 'name'])
+			}
+		}
+		assert ([
+			['Ame', 'Cat'],
+			['Blue', 'Fox'],
+			['Blue', 'Cat'],
+		] as Set) == artistList as Set
+	}
 }
