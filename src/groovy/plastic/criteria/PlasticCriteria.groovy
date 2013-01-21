@@ -169,7 +169,13 @@ public class PlasticCriteria {
 				def rsItem = []
 				_props.each{ prop ->
 					if(prop.startsWith('sum ')){
-						rsItem.add(vls.sum(0.0){it."${prop.substring(4)}"})
+						def isAllNull = true
+						def sumResult = vls.sum(0.0){
+							def anValue = it."${prop.substring(4)}"
+							isAllNull = isAllNull && anValue == null
+							anValue?:0.0
+						}
+						rsItem.add(isAllNull ? null : sumResult)
 					}else if(prop.startsWith('rowCount ')){
 						rsItem.add(vls.size())
 					}else if(prop.startsWith('avg ')){
