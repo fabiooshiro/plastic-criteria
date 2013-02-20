@@ -294,4 +294,8 @@ public class PlasticCriteria {
 		def ls = list(clos)
 		return ls ? ls.first() : null
 	}
+
+	def fetchMode(prop, fetchType){
+		// nope https://github.com/fabiooshiro/plastic-criteria/issues/2
+	}
 }

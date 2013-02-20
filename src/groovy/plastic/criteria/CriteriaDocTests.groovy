@@ -1,5 +1,7 @@
 package plastic.criteria;
 
+import org.hibernate.FetchMode
+
 public class CriteriaDocTests {
 
 	void testGroupProperty() {
@@ -419,5 +421,15 @@ public class CriteriaDocTests {
 		
 		assert 1 == rs.size()
 		assert [[monet, 1.1]] == rs
+	}
+
+	void test_fetch_mode(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		def rs = Portrait.withCriteria {
+			eq('artist', monet)
+	        fetchMode('artist', FetchMode.JOIN)
+    	}
+    	assert 1 == rs.size()
 	}
 }
