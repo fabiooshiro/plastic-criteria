@@ -1,5 +1,6 @@
 package plastic.criteria;
 
+import static org.junit.Assert.*;
 import org.hibernate.FetchMode
 
 public class CriteriaDocTests {
@@ -423,6 +424,7 @@ public class CriteriaDocTests {
 		assert [[monet, 1.1]] == rs
 	}
 
+	// next release 0.6
 	void test_fetch_mode(){
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -431,5 +433,53 @@ public class CriteriaDocTests {
 	        fetchMode('artist', FetchMode.JOIN)
     	}
     	assert 1 == rs.size()
+	}
+
+	void test_unique_result(){
+		def monet = new Artist(name: 'Monet').save()
+		def portrait = new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		def result = Portrait.withCriteria {
+			eq('artist', monet)
+	        uniqueResult = true
+    	}
+    	assert result == portrait
+	}
+
+	void test_unique_result_exception(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		try{
+			Portrait.withCriteria {
+				eq('artist', monet)
+		        uniqueResult = true
+	    	}
+	    	fail("should throw an exception")
+    	}catch(org.hibernate.NonUniqueResultException e){
+    		// ok
+    	}
+	}
+
+	void test_unique_result_null(){
+		def monet = new Artist(name: 'Monet').save()
+		def res = Portrait.withCriteria {
+			eq('artist', monet)
+	        uniqueResult = true
+    	}
+	    assert res == null	
+	}
+
+	void test_plastic_criteria_over_arrayList(){
+		def ls = [
+			[name: 'monet', bestPlace: [name: 'Japanese Bridge']],
+			[name: 'salvador', bestPlace: [name: 'Catalunya']],
+		]
+		def rs = new PlasticCriteria(ls).list{
+			bestPlace{
+				eq('name', 'Japanese Bridge')
+			}
+		}
+		assert 1 == rs.size()
+		assert 'Japanese Bridge' == rs[0].bestPlace.name
 	}
 }

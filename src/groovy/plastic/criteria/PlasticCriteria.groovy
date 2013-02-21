@@ -14,6 +14,9 @@ public class PlasticCriteria {
 	def _instanceValue
 	def _criteriaValue
 	def _critOptions
+
+	def uniqueResult
+
 	def theImplementations = [
 		"le":{ _instanceValue <= _criteriaValue },
 		"lt":{ _instanceValue  < _criteriaValue },
@@ -34,6 +37,10 @@ public class PlasticCriteria {
 		"ltProperty":{ _instanceValue < _criteriaValue }
 	]
 	
+	public PlasticCriteria(List list){
+		this._clazz = [list: {list}]
+	}
+
 	public PlasticCriteria(clazz){
 		this._clazz = clazz
 	}
@@ -218,7 +225,19 @@ public class PlasticCriteria {
 			}
 			ls = rs
 		}
-		return ls
+		return _handleUniqueResult(ls)
+	}
+
+	def _handleUniqueResult(ls){
+		if(uniqueResult){
+			if(ls.size() > 1){
+				throw new org.hibernate.NonUniqueResultException(ls.size())
+			}else if(ls.size() == 1){
+				return ls[0]
+			}
+		}else{
+			return ls
+		}
 	}
 	
 	def _runCriteria(cri, obj){
