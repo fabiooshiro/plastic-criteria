@@ -1,13 +1,12 @@
-package plastic.criteria;
+package plastic.criteria
 
-public class Artist {
+class Artist {
 
 	String name
-	
+
 	String toString(){
 		name
 	}
-	
+
 	static hasMany = [portraits: Portrait]
-	
 }

@@ -21,9 +21,9 @@ Grails 2.0.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
     // (...)
     plugins {
         // (...) another plugins
-        
+
         // add this line
-        test ":plastic-criteria:0.4"
+        test ":plastic-criteria:0.6"
     }
     // (...)
 ```
@@ -36,27 +36,27 @@ package plastic.test
 import grails.test.mixin.*
 
 // import mockCriteria() static method
-import static plastic.criteria.PlasticCriteria.* 
+import static plastic.criteria.PlasticCriteria.*
 
 @TestFor(Product)
 class ProductTests {
-	
+
     void testSomething() {
 		new Product(name: 'Foo', value: 10).save()
 		new Product(name: 'Foo', value: 20).save()
 		new Product(name: 'Bar', value: 200).save()
 		new Product(name: 'Bar', value: 100).save()
-		
+
 		// replace default criteria mock
-		mockCriteria([Product]) 
-		
+		mockCriteria([Product])
+
 		def results = Product.withCriteria{
 			projections{
 				groupProperty('name') // now you have groupProperty
 				sum('value')
 			}
 		}
-		
+
 		assert [['Foo', 30 ], ['Bar', 300]] == results
     }
 }
@@ -67,7 +67,7 @@ just
 ```
 import static plastic.criteria.PlasticCriteria.*;
 ```
-and 
+and
 ```
 mockCriteria([Product])
 ```
@@ -76,4 +76,3 @@ mockCriteria([Product])
 <a href="https://twitter.com/fabiooshiro">Sr. Oshiro</a>,
 <a href="http://www.facebook.com/MaxMustang23">Max Mustang</a>,
 <a href="https://twitter.com/dtuler">Danilo Tuler</a>
-
