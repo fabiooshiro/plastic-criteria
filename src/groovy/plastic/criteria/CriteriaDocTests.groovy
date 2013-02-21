@@ -430,9 +430,9 @@ public class CriteriaDocTests {
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		def rs = Portrait.withCriteria {
 			eq('artist', monet)
-			fetchMode('artist', FetchMode.JOIN)
-		}
-		assert 1 == rs.size()
+	        fetchMode('artist', FetchMode.JOIN)
+    	}
+    	assert 1 == rs.size()
 	}
 
 	void test_unique_result(){
@@ -440,9 +440,9 @@ public class CriteriaDocTests {
 		def portrait = new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		def result = Portrait.withCriteria {
 			eq('artist', monet)
-			uniqueResult = true
-		}
-		assert result == portrait
+	        uniqueResult = true
+    	}
+    	assert result == portrait
 	}
 
 	void test_unique_result_exception(){
@@ -452,21 +452,21 @@ public class CriteriaDocTests {
 		try{
 			Portrait.withCriteria {
 				eq('artist', monet)
-				uniqueResult = true
-			}
-			fail("should throw an exception")
-		}catch(org.hibernate.NonUniqueResultException e){
-			// ok
-		}
+		        uniqueResult = true
+	    	}
+	    	fail("should throw an exception")
+    	}catch(org.hibernate.NonUniqueResultException e){
+    		// ok
+    	}
 	}
 
 	void test_unique_result_null(){
 		def monet = new Artist(name: 'Monet').save()
 		def res = Portrait.withCriteria {
 			eq('artist', monet)
-			uniqueResult = true
-		}
-		assert res == null	
+	        uniqueResult = true
+    	}
+	    assert res == null	
 	}
 
 	void test_plastic_criteria_over_arrayList(){
