@@ -1,9 +1,10 @@
-package plastic.criteria;
+package plastic.criteria
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
+
 import org.hibernate.FetchMode
 
-public class CriteriaDocTests {
+class CriteriaDocTests {
 
 	void testGroupProperty() {
 		def pablo = new Artist(name: 'Pablo').save()
@@ -19,7 +20,7 @@ public class CriteriaDocTests {
 		}
 		assert [[32.00, pablo], [20.00, salvador]] ==  artistValue
 	}
-	
+
 	void test2xGroupProperty(){
 		def pablo = new Artist(name: 'Pablo').save()
 		def salvador = new Artist(name: 'Salvador').save()
@@ -37,7 +38,7 @@ public class CriteriaDocTests {
 		}
 		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
 	}
-	
+
 	void testAnd(){
 		def pablo = new Artist(name: 'Pablo').save()
 		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00, color: 'orange').save()
@@ -49,11 +50,11 @@ public class CriteriaDocTests {
 			}
 			eq('color', 'blue')
 		}
-	
+
 		assert 1 == portraits.size()
 		assert "Les Noces de Pierrette" == portraits[0].name
 	}
-	
+
 	void testOr(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		def plastic1 = new Portrait(artist: artitst, name: 'Soleil levant').save()
@@ -65,7 +66,7 @@ public class CriteriaDocTests {
 				eq('name', 'The Madonna of Port Lligat')
 			}
 		}
-		
+
 		assert [plastic1, plastic2] == ls
 	}
 
@@ -81,7 +82,7 @@ public class CriteriaDocTests {
 		}
 		assert 2.0 == average
 	}
-	
+
 	void testSum(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -94,7 +95,7 @@ public class CriteriaDocTests {
 		}
 		assert 6.0 == total
 	}
-	
+
 	void testMin(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -107,7 +108,7 @@ public class CriteriaDocTests {
 		}
 		assert 1.0 == res
 	}
-	
+
 	void testMax(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -120,7 +121,7 @@ public class CriteriaDocTests {
 		}
 		assert 3.0 == res
 	}
-	
+
 	void testIgnoreCase(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -129,10 +130,10 @@ public class CriteriaDocTests {
 		def results = Portrait.withCriteria{
 			eq('name', 'SOLEIL LEVANT', [ignoreCase: true])
 		}
-		
+
 		assert [a, b] == results
 	}
-	
+
 	void testLike(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -143,7 +144,7 @@ public class CriteriaDocTests {
 		}
 		assert [a, b] == results
 	}
-	
+
 	void testNot(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -156,7 +157,7 @@ public class CriteriaDocTests {
 		}
 		assert [c] == results
 	}
-	
+
 	void testMissingMethodException(){
 		try{
 			Portrait.withCriteria{
@@ -167,7 +168,7 @@ public class CriteriaDocTests {
 			assert e.message?.contains('.myMissingMethod()')
 		}
 	}
-	
+
 	void testRowCount(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -180,7 +181,7 @@ public class CriteriaDocTests {
 		}
 		assert 3 == res[0]
 	}
-	
+
 	// not working in H2
 	void xtestRowCountAndGroupProperty(){
 		def monet = new Artist(name: 'Monet').save()
@@ -210,7 +211,7 @@ public class CriteriaDocTests {
 		assert a == res[0]
 		assert c == res[1]
 	}
-	
+
 	void testEqProperty(){
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 10.0, name: 'Soleil levant',artist: artitst ).save()
@@ -287,41 +288,41 @@ public class CriteriaDocTests {
 		assert 1 == res.size()
 		assert soleill == res.first()
 	}
-	
+
 	void testProjectionProperty(){
 		def monet = new Artist(name: 'Monet').save()
-		
+
 		new Portrait(artist: monet, name: 'Soleil levant 1', value: 1.0).save()
 		new Portrait(artist: monet, name: 'Soleil levant 2', value: 1.0).save()
 		new Portrait(artist: monet, name: 'Soleil levant 3', value: 1.0).save()
-		
+
 		def rs = Portrait.withCriteria {
 			projections {
 				property('artist')
 			}
 		}
-		
+
 		assert 3 == rs.size()
 		rs.each{
 			assert it instanceof Artist
 			assert it.name == 'Monet'
 		}
 	}
-	
+
 	void testProjectionProperties(){
 		def monet = new Artist(name: 'Monet').save()
-		
+
 		new Portrait(artist: monet, name: 'Soleil levant 1', value: 1.0).save()
 		new Portrait(artist: monet, name: 'Soleil levant 2', value: 1.0).save()
 		new Portrait(artist: monet, name: 'Soleil levant 3', value: 1.0).save()
-		
+
 		def rs = Portrait.withCriteria {
 			projections {
 				property('artist')
 				property('value')
 			}
 		}
-		
+
 		assert 3 == rs.size()
 		rs.each{
 			assert it[0] instanceof Artist
@@ -329,25 +330,25 @@ public class CriteriaDocTests {
 			assert it[1] == 1.0
 		}
 	}
-	
+
 	void testProjectionPropertyAndSum(){
 		def monet = new Artist(name: 'Monet').save()
-		
+
 		new Portrait(artist: monet, name: 'Soleil levant 1', value: 1.0).save()
 		new Portrait(artist: monet, name: 'Soleil levant 2', value: 1.0).save()
 		new Portrait(artist: monet, name: 'Soleil levant 3', value: 1.0).save()
-		
+
 		def rs = Portrait.withCriteria {
 			projections {
 				property('artist')
 				sum('value')
 			}
 		}
-		
+
 		assert 1 == rs.size()
 		assert [[monet, 3.0]] == rs
 	}
-	
+
 	void testOrderBy(){
 		def a = new Artist(name: 'Andreas Achenbach').save()
 		def c = new Artist(name: 'Constance Gordon-Cumming').save()
@@ -368,7 +369,7 @@ public class CriteriaDocTests {
 		}
 		assert ['Andreas Achenbach', 'Botero', 'Constance Gordon-Cumming'] == artistList
 	}
-	
+
 	//next release 0.5
 	void testDistinctWithArrayParam(){
 		def b = new Artist(name: 'Tomie Oshiro').save()
@@ -390,36 +391,36 @@ public class CriteriaDocTests {
 
 	void test_sum_null(){
 		def monet = new Artist(name: 'Monet').save()
-		
+
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
 		new Portrait(artist: monet, name: 'Soleil levant 3').save()
-		
+
 		def rs = Portrait.withCriteria {
 			projections {
 				property('artist')
 				sum('value')
 			}
 		}
-		
+
 		assert 1 == rs.size()
 		assert [[monet, null]] == rs
 	}
 
 	void test_sum_with_null(){
 		def monet = new Artist(name: 'Monet').save()
-		
+
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2', value: 1.1).save()
 		new Portrait(artist: monet, name: 'Soleil levant 3').save()
-		
+
 		def rs = Portrait.withCriteria {
 			projections {
 				property('artist')
 				sum('value')
 			}
 		}
-		
+
 		assert 1 == rs.size()
 		assert [[monet, 1.1]] == rs
 	}
@@ -466,7 +467,7 @@ public class CriteriaDocTests {
 			eq('artist', monet)
 	        uniqueResult = true
     	}
-	    assert res == null	
+	    assert res == null
 	}
 
 	void test_plastic_criteria_over_arrayList(){
