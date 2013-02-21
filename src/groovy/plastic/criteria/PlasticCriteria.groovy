@@ -1,6 +1,6 @@
-package plastic.criteria;
+package plastic.criteria
 
-public class PlasticCriteria {
+class PlasticCriteria {
 	def _clazz
 	def _maxRes
 	def _props = []
@@ -10,7 +10,7 @@ public class PlasticCriteria {
 	def _distinctProp
 	def _leCriticalList = [tp: 'and', ls: []]
 	def _prefix = ''
-	
+
 	def _instanceValue
 	def _criteriaValue
 	def _critOptions
@@ -36,25 +36,25 @@ public class PlasticCriteria {
 		"gtProperty":{ _instanceValue > _criteriaValue },
 		"ltProperty":{ _instanceValue < _criteriaValue }
 	]
-	
-	public PlasticCriteria(List list){
-		this._clazz = [list: {list}]
+
+	PlasticCriteria(List list){
+		_clazz = [list: {list}]
 	}
 
-	public PlasticCriteria(clazz){
-		this._clazz = clazz
+	PlasticCriteria(clazz){
+		_clazz = clazz
 	}
-	
-	public PlasticCriteria(clazz, pref){
+
+	PlasticCriteria(clazz, pref){
 		_prefix = pref + '.'
 	}
-	
+
 	static void mockCriteria(List clazzes){
 		clazzes.each{
 			mockCriteria(it)
-		}	
+		}
 	}
-	
+
 	static void mockCriteria(Class clazz){
 		clazz.metaClass.'static'.withCriteria = { Closure cls ->
 			new PlasticCriteria(clazz).list(cls)
@@ -68,83 +68,83 @@ public class PlasticCriteria {
 		ge(prop, firstValue)
 		le(prop, secondValue)
 	}
-	
+
 	def listDistinct(cls){
-		
+
 	}
-	
+
 	def maxResults(limit){
 		_maxRes = limit
 	}
-	
+
 	def distinct(prop){
 		_distinctProp = prop
 	}
-	
+
 	def property(prop){
 		_props.add(prop)
 	}
-	
+
 	def min(prop){
 		_hasCalcProp = true
 		_props.add("min $prop")
 	}
-	
+
 	def max(prop){
 		_hasCalcProp = true
 		_props.add("max $prop")
 	}
-	
+
 	def sum(prop){
 		_hasCalcProp = true
 		_props.add("sum $prop")
 	}
-	
+
 	def avg(prop){
 		_hasCalcProp = true
 		_props.add("avg $prop")
 	}
-	
+
 	def groupProperty(prop){
 		_groupProps.add(prop)
 		_props.add(prop)
 	}
-	
+
 	def rowCount(){
 		_hasCalcProp = true
 		_props.add("rowCount ")
 	}
-	
+
 	def projections(clos){
 		clos.delegate = this
 		clos()
 	}
-	
+
 	def order(prop, order){
 		_orders.add("${prop} ${order}")
 	}
-	
+
 	def methodMissing(String name, args){
 		if(theImplementations.containsKey(name)){
 			_leCriticalList.ls.add([criteriaName: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
 			if(!args || !(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
-			def fc = new PlasticCriteria(this._clazz, name)
+			def fc = new PlasticCriteria(_clazz, name)
 			args[0].resolveStrategy = Closure.DELEGATE_FIRST
 			args[0].delegate = fc
 			args[0]()
 			fc._leCriticalList.ls.each{ v ->
-				this._leCriticalList.ls.add(v)
+				_leCriticalList.ls.add(v)
 			}
 			fc._orders.each{
-				this._orders.add((name + '.' + it)) 
+				_orders.add((name + '.' + it))
 			}
 			if(fc._distinctProp){
-				this._distinctProp = name + '.' + fc._distinctProp
+				_distinctProp = name + '.' + fc._distinctProp
 			}
 		}
 	}
-	
+
 	def theAndOrNotPush(tp, clos){
 		def thePersistenceOfMemory = _leCriticalList
 		_leCriticalList = [tp: tp, ls: []]
@@ -153,19 +153,19 @@ public class PlasticCriteria {
 		clos()
 		_leCriticalList = thePersistenceOfMemory
 	}
-	
+
 	def and(clos){
 		theAndOrNotPush('and', clos)
 	}
-	
+
 	def or(clos){
 		theAndOrNotPush('or', clos)
 	}
-	
+
 	def not(clos){
 		theAndOrNotPush('not', clos)
 	}
-	
+
 	def list(clos){
 		clos.delegate = this
 		clos()
@@ -239,7 +239,7 @@ public class PlasticCriteria {
 			return ls
 		}
 	}
-	
+
 	def _runCriteria(cri, obj){
 		if(cri.criteriaName.endsWith('Property')){
 			_criteriaValue = obj."${cri.val}"
@@ -250,7 +250,7 @@ public class PlasticCriteria {
 		_critOptions = cri.opt
 		return theImplementations[cri.criteriaName]()
 	}
-	
+
 	def knokinOnHeavensDoor(criList, obj){
 		def gotoParadise
 		if(criList.tp == 'and'){
@@ -282,7 +282,7 @@ public class PlasticCriteria {
 		}
 		return res
 	}
-	
+
 	def _filteredList(){
 		def r = []
 		_clazz.list().each{ obj ->
@@ -308,7 +308,7 @@ public class PlasticCriteria {
 		}
 		return r
 	}
-	
+
 	def get(clos){
 		def ls = list(clos)
 		return ls ? ls.first() : null

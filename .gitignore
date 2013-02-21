@@ -5,5 +5,5 @@ target
 *.log
 *.zip
 .DS_Store
-web-app/plugins
-web-app/WEB-INF/lib
+web-app
+plugin.xml
