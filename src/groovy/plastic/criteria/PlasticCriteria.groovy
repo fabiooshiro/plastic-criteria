@@ -3,6 +3,7 @@ package plastic.criteria
 class PlasticCriteria {
 	def _clazz
 	def _maxRes
+	def _offset
 	def _props = []
 	def _hasCalcProp = false
 	def _groupProps = []
@@ -166,7 +167,16 @@ class PlasticCriteria {
 		theAndOrNotPush('not', clos)
 	}
 
-	def list(clos){
+	def list(params, Closure clos){
+		_maxRes = params.max
+		_offset = params.offset
+		if(params.sort){
+			order(params.sort, params.order ?: 'asc')
+		}
+		return list(clos)
+	}
+
+	def list(Closure clos){
 		clos.delegate = this
 		clos()
 		def ls = _filteredList()
@@ -225,7 +235,13 @@ class PlasticCriteria {
 			}
 			ls = rs
 		}
-		return _handleUniqueResult(ls)
+		return _handleUniqueResult(_maxAndOffset(ls))
+	}
+
+	def _maxAndOffset(ls){
+		if(_offset) ls = ls[_offset..-1]
+		if(_maxRes) ls = ls[0..(_maxRes -1)]
+		ls
 	}
 
 	def _handleUniqueResult(ls){
@@ -291,10 +307,8 @@ class PlasticCriteria {
 			}
 		}
 		_orders.each{
-			def arr = it.split(' ')
-			def prop = arr[0]
-			def order = arr[1]
-			r.sort{ a, b->
+			def (prop, order) = it.split(' ')
+			r.sort{ a, b ->
 				try{
 					if(order == 'asc'){
 						return _getProp(a, prop).compareTo(_getProp(b, prop))

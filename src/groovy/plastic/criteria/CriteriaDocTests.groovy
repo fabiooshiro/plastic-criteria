@@ -483,4 +483,65 @@ class CriteriaDocTests {
 		assert 1 == rs.size()
 		assert 'Japanese Bridge' == rs[0].bestPlace.name
 	}
+
+	// next release 0.7
+	void test_list_params_max(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		new Portrait(artist: monet, name: 'Soleil levant 3').save()
+		new Portrait(artist: monet, name: 'Soleil levant 4').save()
+		new Portrait(artist: monet, name: 'Soleil levant 5').save()
+		new Portrait(artist: monet, name: 'Soleil levant 6').save()
+		new Portrait(artist: monet, name: 'Soleil levant 7').save()
+		def rs = Portrait.createCriteria().list([max: 3]){
+			eq('artist', monet)
+		}
+		assert 3 == rs.size()
+	}
+
+	void test_list_params_max_and_offset(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		new Portrait(artist: monet, name: 'Soleil levant 3').save()
+		new Portrait(artist: monet, name: 'Soleil levant 4').save()
+		new Portrait(artist: monet, name: 'Soleil levant 5').save()
+		new Portrait(artist: monet, name: 'Soleil levant 6').save()
+		new Portrait(artist: monet, name: 'Soleil levant 7').save()
+		def rs = Portrait.createCriteria().list([max: 3, offset: 2]){
+			eq('artist', monet)
+		}
+		assert 3 == rs.size()
+		assert 'Soleil levant 3' == rs[0].name
+		assert 'Soleil levant 4' == rs[1].name
+		assert 'Soleil levant 5' == rs[2].name
+	}
+
+	void test_list_params_sort(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 3').save()
+		def rs = Portrait.createCriteria().list([sort: 'name']){
+			eq('artist', monet)
+		}
+		assert 'Soleil levant 1' == rs[0].name
+		assert 'Soleil levant 2' == rs[1].name
+		assert 'Soleil levant 3' == rs[2].name
+	}
+
+	void test_list_params_sort_order(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		new Portrait(artist: monet, name: 'Soleil levant 3').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		def rs = Portrait.createCriteria().list([sort: 'name', order: 'desc']){
+			eq('artist', monet)
+		}
+		assert 'Soleil levant 3' == rs[0].name
+		assert 'Soleil levant 2' == rs[1].name
+		assert 'Soleil levant 1' == rs[2].name
+	}
+
 }
