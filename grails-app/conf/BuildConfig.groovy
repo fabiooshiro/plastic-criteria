@@ -13,7 +13,6 @@ grails.project.dependency.resolution = {
 	}
 
 	dependencies {
-		compile 'javassist:javassist:3.12.1.GA'
 	}
 
 	plugins {
