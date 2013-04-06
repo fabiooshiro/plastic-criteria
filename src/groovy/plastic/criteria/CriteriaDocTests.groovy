@@ -544,4 +544,45 @@ class CriteriaDocTests {
 		assert 'Soleil levant 1' == rs[2].name
 	}
 
+	// next release 0.8
+	void test_bug_list_size_smaller_than_max_results(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		new Portrait(artist: monet, name: 'Soleil levant 3').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		def rs = Portrait.createCriteria().list([sort: 'name', order: 'desc']){
+			maxResults(5)
+		}
+		assert 3 == rs.size()
+	}
+
+	void test_list_size_smaller_than_offset_case1(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		def rs = Portrait.createCriteria().list([max: 3, offset: 5]){
+			eq('artist', monet)
+		}
+		assert 0 == rs.size()
+	}
+
+	void test_list_size_smaller_than_offset_case2(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		def rs = Portrait.createCriteria().list([max: 3, offset: 1]){
+			eq('artist', monet)
+		}
+		assert 1 == rs.size()
+		assert 'Soleil levant 2' == rs[0].name
+	}
+
+	void test_list_size_smaller_than_offset_case3(){
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		def rs = Portrait.createCriteria().list([max: 3, offset: 2]){
+			eq('artist', monet)
+		}
+		assert 0 == rs.size()
+	}
 }
