@@ -4,7 +4,7 @@ import static plastic.criteria.PlasticCriteria.*
 
 import org.junit.Before
 
-@Mock([Artist, Portrait])
+@Mock([Artist, City, Portrait])
 class PlasticCriteriaTests extends CriteriaDocTests{
 
 	@Before

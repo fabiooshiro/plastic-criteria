@@ -130,7 +130,7 @@ class PlasticCriteria {
 			_leCriticalList.ls.add([criteriaName: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
 			if(!args || !(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
-			def fc = new PlasticCriteria(_clazz, name)
+			def fc = new PlasticCriteria(_clazz, _prefix + name)
 			args[0].resolveStrategy = Closure.DELEGATE_FIRST
 			args[0].delegate = fc
 			args[0]()

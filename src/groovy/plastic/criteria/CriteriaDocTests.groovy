@@ -585,4 +585,30 @@ class CriteriaDocTests {
 		}
 		assert 0 == rs.size()
 	}
+
+	// next release 0.9
+	void test_nested_object(){
+		def paris = new City(name: 'Paris').save()
+		def monet = new Artist(name: 'Monet', city: paris).save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+
+		def rio = new City(name: 'Rio de Janeiro').save()
+		def portinari = new Artist(name: 'Portinari', city: rio).save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+
+		def diCavalcanti = new Artist(name: 'Di Cavalcanti', city: rio).save()
+		new Portrait(artist: diCavalcanti, name: 'Autorretrato Com Mulata').save()
+		
+		def rs = Portrait.withCriteria{
+			artist{
+				city{
+					eq('name', 'Rio de Janeiro')
+				}
+			}
+			order('name', 'asc')
+		}
+		assert 3 == rs.size()
+		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
+	}
 }
