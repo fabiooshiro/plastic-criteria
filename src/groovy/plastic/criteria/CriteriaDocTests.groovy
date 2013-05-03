@@ -611,4 +611,13 @@ class CriteriaDocTests {
 		assert 3 == rs.size()
 		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
 	}
+
+	// next release 1.0
+	void test_bugfix_Negative_array_index_too_large_for_array_size_0(){
+		Portrait.createCriteria().get{
+			maxResults(1)
+		}
+	}
+
+
 }

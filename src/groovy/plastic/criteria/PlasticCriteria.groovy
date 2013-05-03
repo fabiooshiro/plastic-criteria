@@ -239,7 +239,7 @@ class PlasticCriteria {
 	}
 
 	def _maxAndOffset(ls){
-		if(_offset >= ls.size()) return []
+		if(_offset >= ls.size() || ls.size() == 0) return []
         if(_offset) ls = ls[_offset..-1]
         if(_maxRes) ls = ls[0..(Math.min(_maxRes,ls.size())-1)]
         ls
