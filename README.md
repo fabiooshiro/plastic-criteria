@@ -15,7 +15,7 @@ For grails 1.3.x
 grails install-plugin plastic-criteria
 ```
 
-Grails 2.0.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
+Grails 2.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
 
 ```groovy
     // (...)
@@ -23,7 +23,7 @@ Grails 2.0.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
         // (...) another plugins
 
         // add this line
-        test ":plastic-criteria:0.8"
+        test ":plastic-criteria:1.0"
     }
     // (...)
 ```
