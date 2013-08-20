@@ -332,4 +332,13 @@ class PlasticCriteria {
 	def fetchMode(prop, fetchType){
 		// nope https://github.com/fabiooshiro/plastic-criteria/issues/2
 	}
+
+	//should be implemented
+	def createAlias(property, propertyAlias){
+
+	}
+
+	def cache(enableCache){
+
+	}
 }
