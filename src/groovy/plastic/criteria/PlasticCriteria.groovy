@@ -337,7 +337,7 @@ class PlasticCriteria {
 	def createAlias(property, propertyAlias){
 
 	}
-
+	//should be implemented
 	def cache(enableCache){
 
 	}
