@@ -15,6 +15,7 @@ class PlasticCriteria {
 	def _instanceValue
 	def _criteriaValue
 	def _critOptions
+	def _propertyAlias = [:]
 
 	def uniqueResult
 
@@ -284,7 +285,19 @@ class PlasticCriteria {
 
 	def __getProperty(obj, propertyName){
 		def res = obj
-		propertyName.split('\\.').each{ res = it == 'class' ? res.class.name : res."$it" }
+		def currentPath = []
+		propertyName.split('\\.').each{ 
+			currentPath << it
+			if(it == 'class'){
+				res = res.class.name
+			}else{
+				try{
+					res = res."$it"
+				}catch(MissingPropertyException e){
+					res = res."${_propertyAlias[currentPath.join('.')]}"
+				}
+			}
+		}
 		return res
 	}
 
@@ -333,12 +346,11 @@ class PlasticCriteria {
 		// nope https://github.com/fabiooshiro/plastic-criteria/issues/2
 	}
 
-	//should be implemented
 	def createAlias(property, propertyAlias){
-
+		_propertyAlias.put(propertyAlias, property)
 	}
-	//should be implemented
-	def cache(enableCache){
 
+	def cache(enableCache){
+		// nope
 	}
 }
