@@ -23,7 +23,7 @@ Grails 2.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
         // (...) another plugins
 
         // add this line
-        test ":plastic-criteria:1.0"
+        test ":plastic-criteria:1.2"
     }
     // (...)
 ```
@@ -71,6 +71,11 @@ and
 ```
 mockCriteria([Product])
 ```
+
+Full docs at:
+-------------
+
+https://github.com/fabiooshiro/plastic-criteria/blob/master/src/groovy/plastic/criteria/CriteriaDocTests.groovy
 
 ## Committers
 <a href="https://twitter.com/fabiooshiro">Sr. Oshiro</a>,
