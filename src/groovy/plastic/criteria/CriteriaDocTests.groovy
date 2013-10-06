@@ -642,4 +642,19 @@ class CriteriaDocTests {
 		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
 	}
 
+	// next release 1.3
+	void test_avg_division_undefined(){
+		def artitst = new Artist(name: 'Brilhante').save()
+		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
+		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
+		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
+		def average = Portrait.createCriteria().get{
+			eq('name', 'not exists')
+			projections{
+				avg('value')
+			}
+		}
+		assert null == average
+	}
+
 }

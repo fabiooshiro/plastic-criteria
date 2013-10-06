@@ -19,6 +19,8 @@ class PlasticCriteria {
 
 	def uniqueResult
 
+	static _SaintPeter = new SaintPeter()
+
 	def theImplementations = [
 		"le":{ _instanceValue <= _criteriaValue },
 		"lt":{ _instanceValue  < _criteriaValue },
@@ -197,7 +199,7 @@ class PlasticCriteria {
 					}else if(prop.startsWith('rowCount ')){
 						rsItem.add(vls.size())
 					}else if(prop.startsWith('avg ')){
-						rsItem.add(vls.sum(0.0){it."${prop.substring(4)}"} / vls.size())
+						rsItem.add(vls.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
 					}else if(prop.startsWith('min ')){
 						def min
 						vls.each{ if(min == null || it."${prop.substring(4)}" < min) min = it."${prop.substring(4)}" }
@@ -266,7 +268,9 @@ class PlasticCriteria {
 		}
 		_instanceValue = _getProp(obj, cri.prop)
 		_critOptions = cri.opt
-		return theImplementations[cri.criteriaName]()
+		def result = theImplementations[cri.criteriaName]()
+		_SaintPeter.tell("    ${cri.criteriaName}('${_instanceValue}', '${_criteriaValue}') == ${result}")
+		return result
 	}
 
 	def knokinOnHeavensDoor(criList, obj){
@@ -315,9 +319,14 @@ class PlasticCriteria {
 
 	def _filteredList(){
 		def r = []
+		if(_clazz.list().size() == 0) _SaintPeter.tell "Hey the ${_clazz.simpleName}.list() is empty!"
 		_clazz.list().each{ obj ->
+			_SaintPeter.tell obj
 			if(knokinOnHeavensDoor(_leCriticalList, obj)){
 				r.add(obj)
+				_SaintPeter.tell "    welcome to heaven"
+			}else{
+				_SaintPeter.tell "    sorry"
 			}
 		}
 		_orders.each{
