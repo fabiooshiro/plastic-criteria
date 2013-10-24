@@ -251,7 +251,11 @@ class PlasticCriteria {
 	def _handleUniqueResult(ls){
 		if(uniqueResult){
 			if(ls.size() > 1){
-				throw new org.hibernate.NonUniqueResultException(ls.size())
+				try{
+					throw Class.forName('org.hibernate.NonUniqueResultException').getConstructor(Integer.TYPE).newInstance(ls.size())
+				}catch(java.lang.ClassNotFoundException e){
+					throw new RuntimeException("NonUniqueResultException: ${ls.size()}")
+				}
 			}else if(ls.size() == 1){
 				return ls[0]
 			}
