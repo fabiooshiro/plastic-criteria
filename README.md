@@ -1,6 +1,8 @@
 PlasticCriteria
 ===================
 
+[![Build Status](https://travis-ci.org/fabiooshiro/plastic-criteria.png?branch=master)](https://travis-ci.org/fabiooshiro/plastic-criteria)
+
 From FakePlasticCriteria renamed to just PlasticCriteria.
 
 The project is licensed under the WTFPL.
