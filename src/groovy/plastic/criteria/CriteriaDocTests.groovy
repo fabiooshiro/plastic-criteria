@@ -12,8 +12,8 @@ class CriteriaDocTests {
 		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00).save()
 		new Portrait(artist: pablo, name: "Les Noces de Pierrette", value: 22.00, color: 'blue').save()
 		new Portrait(artist: salvador, name: "The Persistence of Memory", value: 20.00).save()
-		def artistValue = Portrait.withCriteria{
-			projections{
+		def artistValue = Portrait.withCriteria {
+			projections {
 				sum('value')
 				groupProperty('artist')
 			}
@@ -21,7 +21,7 @@ class CriteriaDocTests {
 		assert [[32.00, pablo], [20.00, salvador]] ==  artistValue
 	}
 
-	void test2xGroupProperty(){
+	void test2xGroupProperty() {
 		def pablo = new Artist(name: 'Pablo').save()
 		def salvador = new Artist(name: 'Salvador').save()
 		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon 1", value: 10.00).save()
@@ -30,8 +30,8 @@ class CriteriaDocTests {
 		new Portrait(artist: salvador, name: "The Persistence of Memory 1", value: 20.00).save()
 		new Portrait(artist: salvador, name: "The Persistence of Memory 2", value: 20.00).save()
 		new Portrait(artist: salvador, name: "The Persistence of Memory 3", value: 20.00).save()
-		def artistValue = Portrait.withCriteria{
-			projections{
+		def artistValue = Portrait.withCriteria {
+			projections {
 				groupProperty('value')
 				groupProperty('artist')
 			}
@@ -39,13 +39,13 @@ class CriteriaDocTests {
 		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
 	}
 
-	void testAnd(){
+	void testAnd() {
 		def pablo = new Artist(name: 'Pablo').save()
 		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00, color: 'orange').save()
 		new Portrait(artist: pablo, name: "Les Noces de Pierrette", value: 22.00, color: 'blue').save()
 
-		def portraits = Portrait.withCriteria{
-			artist{
+		def portraits = Portrait.withCriteria {
+			artist {
 				eq('name', 'Pablo')
 			}
 			eq('color', 'blue')
@@ -55,13 +55,13 @@ class CriteriaDocTests {
 		assert "Les Noces de Pierrette" == portraits[0].name
 	}
 
-	void testOr(){
+	void testOr() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def plastic1 = new Portrait(artist: artitst, name: 'Soleil levant').save()
 		def plastic2 = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat').save()
 		def plastic3 = new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon").save()
-		def ls = Portrait.withCriteria{
-			or{
+		def ls = Portrait.withCriteria {
+			or {
 				eq('name', 'Soleil levant')
 				eq('name', 'The Madonna of Port Lligat')
 			}
@@ -70,112 +70,112 @@ class CriteriaDocTests {
 		assert [plastic1, plastic2] == ls
 	}
 
-	void testAvg(){
+	void testAvg() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
 		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
-		def average = Portrait.createCriteria().get{
-			projections{
+		def average = Portrait.createCriteria().get {
+			projections {
 				avg('value')
 			}
 		}
 		assert 2.0 == average
 	}
 
-	void testSum(){
+	void testSum() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
 		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
-		def total = Portrait.createCriteria().get{
-			projections{
+		def total = Portrait.createCriteria().get {
+			projections {
 				sum('value')
 			}
 		}
 		assert 6.0 == total
 	}
 
-	void testMin(){
+	void testMin() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
 		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
-		def res = Portrait.createCriteria().get{
-			projections{
+		def res = Portrait.createCriteria().get {
+			projections {
 				min('value')
 			}
 		}
 		assert 1.0 == res
 	}
 
-	void testMax(){
+	void testMax() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
 		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
-		def res = Portrait.createCriteria().get{
-			projections{
+		def res = Portrait.createCriteria().get {
+			projections {
 				max('value')
 			}
 		}
 		assert 3.0 == res
 	}
 
-	void testIgnoreCase(){
+	void testIgnoreCase() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		def b = new Portrait(artist: artitst, name: 'Soleil Levant', value: 1.0).save()
 		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 1.0).save()
-		def results = Portrait.withCriteria{
+		def results = Portrait.withCriteria {
 			eq('name', 'SOLEIL LEVANT', [ignoreCase: true])
 		}
 
 		assert [a, b] == results
 	}
 
-	void testLike(){
+	void testLike() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		def b = new Portrait(artist: artitst, name: 'Soleil Levant', value: 1.0).save()
 		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 1.0).save()
-		def results = Portrait.withCriteria{
+		def results = Portrait.withCriteria {
 			like('name', 'Soleil%')
 		}
 		assert [a, b] == results
 	}
 
-	void testNot(){
+	void testNot() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		def b = new Portrait(artist: artitst, name: 'Soleil Levant', value: 1.0).save()
 		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 1.0).save()
-		def results = Portrait.withCriteria{
-			not{
+		def results = Portrait.withCriteria {
+			not {
 				like('name', 'Soleil%')
 			}
 		}
 		assert [c] == results
 	}
 
-	void testMissingMethodException(){
-		try{
-			Portrait.withCriteria{
+	void testMissingMethodException() {
+		try {
+			Portrait.withCriteria {
 				myMissingMethod('name', 'Bach')
 			}
 			fail('where is that method?')
-		}catch(MissingMethodException e){
+		} catch(MissingMethodException e) {
 			assert e.message?.contains('.myMissingMethod()')
 		}
 	}
 
-	void testRowCount(){
+	void testRowCount() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		def b = new Portrait(artist: artitst, name: 'Soleil Levant', value: 1.0).save()
 		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 1.0).save()
-		def res = Portrait.withCriteria{
-			projections{
+		def res = Portrait.withCriteria {
+			projections {
 				rowCount()
 			}
 		}
@@ -183,14 +183,14 @@ class CriteriaDocTests {
 	}
 
 	// not working in H2
-	void xtestRowCountAndGroupProperty(){
+	void xtestRowCountAndGroupProperty() {
 		def monet = new Artist(name: 'Monet').save()
 		def salvador = new Artist(name: 'Salvador').save()
 		def a = new Portrait(artist: monet, name: 'Soleil levant', value: 1.0).save()
 		def b = new Portrait(artist: monet, name: 'Soleil Levant 2', value: 1.0).save()
 		def c = new Portrait(artist: salvador, name: 'The Madonna of Port Lligat', value: 1.0).save()
-		def res = Portrait.withCriteria{
-			projections{
+		def res = Portrait.withCriteria {
+			projections {
 				rowCount()
 				groupProperty('artist')
 			}
@@ -199,12 +199,12 @@ class CriteriaDocTests {
 		assert 1 == res.find{ it[1].name == 'Salvador' }[0]
 	}
 
-	void testBetween(){
+	void testBetween() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def a = new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		def b = new Portrait(artist: artitst, name: 'Monalisa', value: 10.0).save()
 		def c = new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 5.0).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			between('value', 1.0, 7.0)
 		}
 		assert 2 == res.size()
@@ -212,12 +212,12 @@ class CriteriaDocTests {
 		assert c == res[1]
 	}
 
-	void testEqProperty(){
+	void testEqProperty() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 10.0, name: 'Soleil levant',artist: artitst ).save()
 		def monalis = new Portrait(value: 10.0, lastSoldPrice: 10.0, name: 'Monalisa', artist: artitst).save()
 		def madonna = new Portrait(value: 15.0, lastSoldPrice: 15.0, name: 'The Madonna of Port Lligat', artist: artitst).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			eqProperty('value', 'lastSoldPrice')
 		}
 		assert 2 == res.size()
@@ -225,12 +225,12 @@ class CriteriaDocTests {
 		assert madonna == res.last()
 	}
 
-	void testGeProperty(){
+	void testGeProperty() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 10.0, name: 'Soleil levant',artist: artitst ).save()
 		def monalis = new Portrait(value: 10.0, lastSoldPrice: 9.0, name: 'Monalisa', artist: artitst).save()
 		def madonna = new Portrait(value: 15.0, lastSoldPrice: 19.0, name: 'The Madonna of Port Lligat', artist: artitst).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			geProperty('lastSoldPrice', 'value')
 		}
 
@@ -238,12 +238,12 @@ class CriteriaDocTests {
 		assert madonna == res.first()
 	}
 
-	void testLeProperty(){
+	void testLeProperty() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
 		def monalis = new Portrait(value: 10.0, lastSoldPrice: 9.0, name: 'Monalisa', artist: artitst).save()
 		def madonna = new Portrait(value: 15.0, lastSoldPrice: 50.0, name: 'The Madonna of Port Lligat', artist: artitst).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			leProperty('lastSoldPrice','value')
 		}
 
@@ -252,11 +252,11 @@ class CriteriaDocTests {
 	}
 
 
-	void testNeProperty(){
+	void testNeProperty() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
 		def monalis = new Portrait(value: 10.0, lastSoldPrice: 10.0, name: 'Monalisa', artist: artitst).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			neProperty('value','lastSoldPrice')
 		}
 
@@ -264,11 +264,11 @@ class CriteriaDocTests {
 		assert soleill == res.first()
 	}
 
-	void testGtProperty(){
+	void testGtProperty() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
 		def monalis = new Portrait(value: 10.0, lastSoldPrice: 19.0, name: 'Monalisa', artist: artitst).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			gtProperty('lastSoldPrice', 'value')
 		}
 
@@ -277,11 +277,11 @@ class CriteriaDocTests {
 		assert monalis == res.last()
 	}
 
-	void testLtProperty(){
+	void testLtProperty() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		def soleill = new Portrait(value: 20.0, lastSoldPrice: 40.0, name: 'Soleil levant',artist: artitst ).save()
 		def monalis = new Portrait(value: 30.0, lastSoldPrice: 19.0, name: 'Monalisa', artist: artitst).save()
-		def res = Portrait.withCriteria{
+		def res = Portrait.withCriteria {
 			ltProperty('value', 'lastSoldPrice')
 		}
 
@@ -289,7 +289,7 @@ class CriteriaDocTests {
 		assert soleill == res.first()
 	}
 
-	void testProjectionProperty(){
+	void testProjectionProperty() {
 		def monet = new Artist(name: 'Monet').save()
 
 		new Portrait(artist: monet, name: 'Soleil levant 1', value: 1.0).save()
@@ -303,13 +303,13 @@ class CriteriaDocTests {
 		}
 
 		assert 3 == rs.size()
-		rs.each{
+		rs.each {
 			assert it instanceof Artist
 			assert it.name == 'Monet'
 		}
 	}
 
-	void testProjectionProperties(){
+	void testProjectionProperties() {
 		def monet = new Artist(name: 'Monet').save()
 
 		new Portrait(artist: monet, name: 'Soleil levant 1', value: 1.0).save()
@@ -324,14 +324,14 @@ class CriteriaDocTests {
 		}
 
 		assert 3 == rs.size()
-		rs.each{
+		rs.each {
 			assert it[0] instanceof Artist
 			assert it[0].name == 'Monet'
 			assert it[1] == 1.0
 		}
 	}
 
-	void testProjectionPropertyAndSum(){
+	void testProjectionPropertyAndSum() {
 		def monet = new Artist(name: 'Monet').save()
 
 		new Portrait(artist: monet, name: 'Soleil levant 1', value: 1.0).save()
@@ -349,7 +349,7 @@ class CriteriaDocTests {
 		assert [[monet, 3.0]] == rs
 	}
 
-	void testOrderBy(){
+	void testOrderBy() {
 		def a = new Artist(name: 'Andreas Achenbach').save()
 		def c = new Artist(name: 'Constance Gordon-Cumming').save()
 		def b = new Artist(name: 'Botero').save()
@@ -357,12 +357,12 @@ class CriteriaDocTests {
 		new Portrait(artist: c, name: "Indian Life at Mirror Lake").save()
 		new Portrait(artist: c, name: "Temporary Chimneys and Fire Fountains").save()
 		new Portrait(artist: b, name: "Botero's Cat").save()
-		def artistList = Portrait.withCriteria{
-			artist{
+		def artistList = Portrait.withCriteria {
+			artist {
 				order('name', 'asc')
 			}
-			projections{
-				artist{
+			projections {
+				artist {
 					distinct('name')
 				}
 			}
@@ -371,14 +371,14 @@ class CriteriaDocTests {
 	}
 
 	//next release 0.5
-	void testDistinctWithArrayParam(){
+	void testDistinctWithArrayParam() {
 		def b = new Artist(name: 'Tomie Oshiro').save()
 		new Portrait(artist: b, color: 'Ame', name: 'Cat').save() // Ame == yellow
 		new Portrait(artist: b, color: 'Blue', name: 'Fox').save()
 		new Portrait(artist: b, color: 'Ame', name: 'Cat').save()
 		new Portrait(artist: b, color: 'Blue', name: 'Cat').save()
 		def artistList = Portrait.withCriteria{
-			projections{
+			projections {
 				distinct(['color', 'name'])
 			}
 		}
@@ -389,7 +389,7 @@ class CriteriaDocTests {
 		] as Set) == artistList as Set
 	}
 
-	void test_sum_null(){
+	void test_sum_null() {
 		def monet = new Artist(name: 'Monet').save()
 
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -407,7 +407,7 @@ class CriteriaDocTests {
 		assert [[monet, null]] == rs
 	}
 
-	void test_sum_with_null(){
+	void test_sum_with_null() {
 		def monet = new Artist(name: 'Monet').save()
 
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -426,7 +426,7 @@ class CriteriaDocTests {
 	}
 
 	// next release 0.6
-	void test_fetch_mode(){
+	void test_fetch_mode() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		def rs = Portrait.withCriteria {
@@ -436,7 +436,7 @@ class CriteriaDocTests {
     	assert 1 == rs.size()
 	}
 
-	void test_unique_result(){
+	void test_unique_result() {
 		def monet = new Artist(name: 'Monet').save()
 		def portrait = new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		def result = Portrait.withCriteria {
@@ -446,22 +446,22 @@ class CriteriaDocTests {
     	assert result == portrait
 	}
 
-	void test_unique_result_exception(){
+	void test_unique_result_exception() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
-		try{
+		try {
 			Portrait.withCriteria {
 				eq('artist', monet)
 		        uniqueResult = true
 	    	}
 	    	fail("should throw an exception")
-    	}catch(org.hibernate.NonUniqueResultException e){
+    	} catch (org.hibernate.NonUniqueResultException e) {
     		// ok
     	}
 	}
 
-	void test_unique_result_null(){
+	void test_unique_result_null() {
 		def monet = new Artist(name: 'Monet').save()
 		def res = Portrait.withCriteria {
 			eq('artist', monet)
@@ -470,13 +470,13 @@ class CriteriaDocTests {
 	    assert res == null
 	}
 
-	void test_plastic_criteria_over_arrayList(){
+	void test_plastic_criteria_over_arrayList() {
 		def ls = [
 			[name: 'monet', bestPlace: [name: 'Japanese Bridge']],
 			[name: 'salvador', bestPlace: [name: 'Catalunya']],
 		]
-		def rs = new PlasticCriteria(ls).list{
-			bestPlace{
+		def rs = new PlasticCriteria(ls).list {
+			bestPlace {
 				eq('name', 'Japanese Bridge')
 			}
 		}
@@ -485,7 +485,7 @@ class CriteriaDocTests {
 	}
 
 	// next release 0.7
-	void test_list_params_max(){
+	void test_list_params_max() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
@@ -494,13 +494,13 @@ class CriteriaDocTests {
 		new Portrait(artist: monet, name: 'Soleil levant 5').save()
 		new Portrait(artist: monet, name: 'Soleil levant 6').save()
 		new Portrait(artist: monet, name: 'Soleil levant 7').save()
-		def rs = Portrait.createCriteria().list([max: 3]){
+		def rs = Portrait.createCriteria().list([max: 3]) {
 			eq('artist', monet)
 		}
 		assert 3 == rs.size()
 	}
 
-	void test_list_params_max_and_offset(){
+	void test_list_params_max_and_offset() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
@@ -509,7 +509,7 @@ class CriteriaDocTests {
 		new Portrait(artist: monet, name: 'Soleil levant 5').save()
 		new Portrait(artist: monet, name: 'Soleil levant 6').save()
 		new Portrait(artist: monet, name: 'Soleil levant 7').save()
-		def rs = Portrait.createCriteria().list([max: 3, offset: 2]){
+		def rs = Portrait.createCriteria().list([max: 3, offset: 2]) {
 			eq('artist', monet)
 		}
 		assert 3 == rs.size()
@@ -518,12 +518,12 @@ class CriteriaDocTests {
 		assert 'Soleil levant 5' == rs[2].name
 	}
 
-	void test_list_params_sort(){
+	void test_list_params_sort() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 3').save()
-		def rs = Portrait.createCriteria().list([sort: 'name']){
+		def rs = Portrait.createCriteria().list([sort: 'name']) {
 			eq('artist', monet)
 		}
 		assert 'Soleil levant 1' == rs[0].name
@@ -531,12 +531,12 @@ class CriteriaDocTests {
 		assert 'Soleil levant 3' == rs[2].name
 	}
 
-	void test_list_params_sort_order(){
+	void test_list_params_sort_order() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
 		new Portrait(artist: monet, name: 'Soleil levant 3').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
-		def rs = Portrait.createCriteria().list([sort: 'name', order: 'desc']){
+		def rs = Portrait.createCriteria().list([sort: 'name', order: 'desc']) {
 			eq('artist', monet)
 		}
 		assert 'Soleil levant 3' == rs[0].name
@@ -545,31 +545,31 @@ class CriteriaDocTests {
 	}
 
 	// next release 0.8
-	void test_bug_list_size_smaller_than_max_results(){
+	void test_bug_list_size_smaller_than_max_results() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
 		new Portrait(artist: monet, name: 'Soleil levant 3').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
-		def rs = Portrait.createCriteria().list([sort: 'name', order: 'desc']){
+		def rs = Portrait.createCriteria().list([sort: 'name', order: 'desc']) {
 			maxResults(5)
 		}
 		assert 3 == rs.size()
 	}
 
-	void test_list_size_smaller_than_offset_case1(){
+	void test_list_size_smaller_than_offset_case1() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
-		def rs = Portrait.createCriteria().list([max: 3, offset: 5]){
+		def rs = Portrait.createCriteria().list([max: 3, offset: 5]) {
 			eq('artist', monet)
 		}
 		assert 0 == rs.size()
 	}
 
-	void test_list_size_smaller_than_offset_case2(){
+	void test_list_size_smaller_than_offset_case2() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
-		def rs = Portrait.createCriteria().list([max: 3, offset: 1]){
+		def rs = Portrait.createCriteria().list([max: 3, offset: 1]) {
 			eq('artist', monet)
 		}
 		assert 1 == rs.size()
@@ -587,7 +587,7 @@ class CriteriaDocTests {
 	}
 
 	// next release 0.9
-	void test_nested_object(){
+	void test_nested_object() {
 		def paris = new City(name: 'Paris').save()
 		def monet = new Artist(name: 'Monet', city: paris).save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -600,9 +600,9 @@ class CriteriaDocTests {
 		def diCavalcanti = new Artist(name: 'Di Cavalcanti', city: rio).save()
 		new Portrait(artist: diCavalcanti, name: 'Autorretrato Com Mulata').save()
 		
-		def rs = Portrait.withCriteria{
-			artist{
-				city{
+		def rs = Portrait.withCriteria {
+			artist {
+				city {
 					eq('name', 'Rio de Janeiro')
 				}
 			}
@@ -613,14 +613,14 @@ class CriteriaDocTests {
 	}
 
 	// next release 1.0
-	void test_bugfix_Negative_array_index_too_large_for_array_size_0(){
-		Portrait.createCriteria().get{
+	void test_bugfix_Negative_array_index_too_large_for_array_size_0() {
+		Portrait.createCriteria().get {
 			maxResults(1)
 		}
 	}
 
 	// next release 1.2
-	void test_createAlias(){
+	void test_createAlias() {
 		def paris = new City(name: 'Paris').save()
 		def monet = new Artist(name: 'Monet', city: paris).save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -633,7 +633,7 @@ class CriteriaDocTests {
 		def diCavalcanti = new Artist(name: 'Di Cavalcanti', city: rio).save()
 		new Portrait(artist: diCavalcanti, name: 'Autorretrato Com Mulata').save()
 		
-		def rs = Portrait.withCriteria{
+		def rs = Portrait.withCriteria {
 			createAlias('artist', 'genius')
 			eq('genius.city', rio)
 			order('name', 'asc')
@@ -643,18 +643,30 @@ class CriteriaDocTests {
 	}
 
 	// next release 1.3
-	void test_avg_division_undefined(){
+	void test_avg_division_undefined() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
 		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
 		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
-		def average = Portrait.createCriteria().get{
+		def average = Portrait.createCriteria().get {
 			eq('name', 'not exists')
-			projections{
+			projections {
 				avg('value')
 			}
 		}
 		assert null == average
+	}
+
+	// next release 1.4
+	void test_setReadOnly() {
+		def artitst = new Artist(name: 'Brilhante').save()
+		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
+		new Portrait(artist: artitst, name: 'The Madonna of Port Lligat', value: 2.0).save()
+		new Portrait(artist: artitst, name: "Les Demoiselles d'Avignon", value: 3.0).save()
+		def list = Portrait.withCriteria {
+			setReadOnly(true)
+		}
+		assert 3 == list.size()	
 	}
 
 }

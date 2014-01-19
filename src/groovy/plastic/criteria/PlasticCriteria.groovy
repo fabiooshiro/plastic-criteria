@@ -350,20 +350,24 @@ class PlasticCriteria {
 		return r
 	}
 
-	def get(clos){
+	def get(clos) {
 		def ls = list(clos)
 		return ls ? ls.first() : null
 	}
 
-	def fetchMode(prop, fetchType){
+	def fetchMode(prop, fetchType) {
 		// nope https://github.com/fabiooshiro/plastic-criteria/issues/2
 	}
 
-	def createAlias(property, propertyAlias){
+	def setReadOnly(bool) {
+		// nope
+	}
+
+	def createAlias(property, propertyAlias) {
 		_propertyAlias.put(propertyAlias, property)
 	}
 
-	def cache(enableCache){
+	def cache(enableCache) {
 		// nope
 	}
 }
