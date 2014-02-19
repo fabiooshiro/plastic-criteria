@@ -294,14 +294,15 @@ class PlasticCriteria {
 	def __getProperty(obj, propertyName){
 		def res = obj
 		def currentPath = []
-		propertyName.split('\\.').each{ 
+		propertyName.split('\\.').each {
 			currentPath << it
-			if(it == 'class'){
+			if (res == null) return
+			if (it == 'class') {
 				res = res.class.name
-			}else{
-				try{
+			} else {
+				try {
 					res = res."$it"
-				}catch(MissingPropertyException e){
+				} catch(MissingPropertyException e) {
 					res = res."${_propertyAlias[currentPath.join('.')]}"
 				}
 			}

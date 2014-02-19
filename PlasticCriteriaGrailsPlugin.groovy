@@ -1,5 +1,5 @@
 class PlasticCriteriaGrailsPlugin {
-	def version = "1.4"
+	def version = "1.4.1"
 	def grailsVersion = "1.3 > *"
 	def pluginExcludes = [
 		'grails-app/domain/**',

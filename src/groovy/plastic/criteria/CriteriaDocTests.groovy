@@ -370,7 +370,7 @@ class CriteriaDocTests {
 		assert ['Andreas Achenbach', 'Botero', 'Constance Gordon-Cumming'] == artistList
 	}
 
-	//next release 0.5
+	// version 0.5
 	void testDistinctWithArrayParam() {
 		def b = new Artist(name: 'Tomie Oshiro').save()
 		new Portrait(artist: b, color: 'Ame', name: 'Cat').save() // Ame == yellow
@@ -425,7 +425,7 @@ class CriteriaDocTests {
 		assert [[monet, 1.1]] == rs
 	}
 
-	// next release 0.6
+	// version 0.6
 	void test_fetch_mode() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -484,7 +484,7 @@ class CriteriaDocTests {
 		assert 'Japanese Bridge' == rs[0].bestPlace.name
 	}
 
-	// next release 0.7
+	// version 0.7
 	void test_list_params_max() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
@@ -544,7 +544,7 @@ class CriteriaDocTests {
 		assert 'Soleil levant 1' == rs[2].name
 	}
 
-	// next release 0.8
+	// version 0.8
 	void test_bug_list_size_smaller_than_max_results() {
 		def monet = new Artist(name: 'Monet').save()
 		new Portrait(artist: monet, name: 'Soleil levant 2').save()
@@ -586,7 +586,7 @@ class CriteriaDocTests {
 		assert 0 == rs.size()
 	}
 
-	// next release 0.9
+	// version 0.9
 	void test_nested_object() {
 		def paris = new City(name: 'Paris').save()
 		def monet = new Artist(name: 'Monet', city: paris).save()
@@ -612,14 +612,14 @@ class CriteriaDocTests {
 		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
 	}
 
-	// next release 1.0
+	// version 1.0
 	void test_bugfix_Negative_array_index_too_large_for_array_size_0() {
 		Portrait.createCriteria().get {
 			maxResults(1)
 		}
 	}
 
-	// next release 1.2
+	// version 1.2
 	void test_createAlias() {
 		def paris = new City(name: 'Paris').save()
 		def monet = new Artist(name: 'Monet', city: paris).save()
@@ -642,7 +642,7 @@ class CriteriaDocTests {
 		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
 	}
 
-	// next release 1.3
+	// version 1.3
 	void test_avg_division_undefined() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -657,7 +657,7 @@ class CriteriaDocTests {
 		assert null == average
 	}
 
-	// next release 1.4
+	// version 1.4
 	void test_setReadOnly() {
 		def artitst = new Artist(name: 'Brilhante').save()
 		new Portrait(artist: artitst, name: 'Soleil levant', value: 1.0).save()
@@ -667,6 +667,32 @@ class CriteriaDocTests {
 			setReadOnly(true)
 		}
 		assert 3 == list.size()	
+	}
+
+	// version 1.4.1
+	void test_fix_null_pointer_in_getProperty() {
+		def monet = null
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+
+		def rio = new City(name: 'Rio de Janeiro').save()
+		def portinari = new Artist(name: 'Portinari', city: rio).save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+
+		def diCavalcanti = new Artist(name: 'Di Cavalcanti', city: rio).save()
+		new Portrait(artist: diCavalcanti, name: 'Autorretrato Com Mulata').save()
+		
+		assert 4 == Portrait.count()
+		def rs = Portrait.withCriteria {
+			artist {
+				city {
+					eq('name', 'Rio de Janeiro')
+				}
+			}
+			order('name', 'asc')
+		}
+		assert 3 == rs.size()
+		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
 	}
 
 }

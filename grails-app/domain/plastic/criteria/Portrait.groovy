@@ -20,5 +20,6 @@ class Portrait {
 		color nullable: true
 		value nullable: true
 		lastSoldPrice nullable: true
+		artist nullable: true
 	}
 }
