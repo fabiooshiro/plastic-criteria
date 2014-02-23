@@ -666,7 +666,7 @@ class CriteriaDocTests {
 		def list = Portrait.withCriteria {
 			setReadOnly(true)
 		}
-		assert 3 == list.size()	
+		assert 3 == list.size()
 	}
 
 	// version 1.4.1
@@ -695,4 +695,19 @@ class CriteriaDocTests {
 		assert ['Autorretrato Com Mulata', 'Paisagem de Brodowski', 'Retirantes'] == rs.name
 	}
 
+	// version 1.5
+	void test_listDistinct() {
+		def salvador = new Artist(name: 'Salvador').save()
+		new Portrait(artist: salvador, name: 'The Madonna of Port Lligat', value: 2.0).save()
+		new Portrait(artist: salvador, name: "The Persistence of Memory", value: 20.00).save()
+
+		def pablo = new Artist(name: 'Pablo').save()
+		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00).save()
+		def list = Portrait.createCriteria().listDistinct {
+			artist {
+				eq('name', 'Salvador')
+			}
+		}
+		assert 2 == list.size()
+	}
 }

@@ -74,7 +74,7 @@ class PlasticCriteria {
 	}
 
 	def listDistinct(cls){
-
+		list(cls)
 	}
 
 	def maxResults(limit){
