@@ -710,4 +710,22 @@ class CriteriaDocTests {
 		}
 		assert 2 == list.size()
 	}
+
+	// version 1.5.1
+	void test_inList() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+
+		def salvador = new Artist(name: 'Salvador').save()
+		new Portrait(artist: salvador, name: 'The Madonna of Port Lligat', value: 2.0).save()
+		new Portrait(artist: salvador, name: "The Persistence of Memory", value: 20.00).save()
+
+		def pablo = new Artist(name: 'Pablo').save()
+		new Portrait(artist: pablo, name: "Les Demoiselles d'Avignon", value: 10.00).save()
+		def list = Portrait.withCriteria {
+			inList('artist', [pablo, salvador])
+		}
+		assert list.size() == 3
+	}
 }
