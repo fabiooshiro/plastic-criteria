@@ -3,6 +3,7 @@ package plastic.criteria
 import static org.junit.Assert.*
 
 import org.hibernate.FetchMode
+import org.hibernate.criterion.CriteriaSpecification
 
 class CriteriaDocTests {
 
@@ -728,4 +729,44 @@ class CriteriaDocTests {
 		}
 		assert list.size() == 3
 	}
+
+    // version 1.5.2
+    void testCreateAliasJoins() {
+        def portinari = new Artist(name: "Portinari").save()
+        def leftJoinList = Artist.withCriteria {
+            createAlias("portraits", "ps", CriteriaSpecification.LEFT_JOIN) 
+            eq("name", portinari.name)
+        }
+        assert leftJoinList.size() == 1
+        def innerJoinList = Artist.withCriteria {
+            createAlias("portraits", "ps", CriteriaSpecification.INNER_JOIN)
+            eq("name", portinari.name)
+        }
+        assert innerJoinList.size() == 0
+        // No join specified, defaults to inner join anyway
+        def defaultJoinList = Artist.withCriteria {
+            createAlias("portraits", "ps")
+            eq("name", portinari.name)
+        }
+        assert defaultJoinList.size() == 0
+    }
+
+    // version 1.5.2
+    void testCriteriaCount() {
+        def portinari = new Artist(name: 'Portinari').save()
+        new Portrait(artist: portinari, name: 'Retirantes').save()
+        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+        def list = Portrait.withCriteria {
+            artist {
+                eq("name", portinari.name)
+            }
+        }
+        assert list.size() == 2
+        def count = Portrait.createCriteria().count {
+            artist {
+                eq("name", portinari.name)
+            }
+        }
+        assert count == 2
+    }
 }
