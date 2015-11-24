@@ -245,6 +245,14 @@ class PlasticCriteria {
 		return _handleUniqueResult(_maxAndOffset(ls))
 	}
 
+    def count(params, Closure clos){
+        list(params, clos).size()
+    }
+
+    def count(Closure clos) {
+        list(clos).size()
+    }
+
 	def _maxAndOffset(ls){
 		if(_offset >= ls.size() || ls.size() == 0) return []
         if(_offset) ls = ls[_offset..-1]
