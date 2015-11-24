@@ -1,5 +1,7 @@
 package plastic.criteria
 
+import org.hibernate.criterion.CriteriaSpecification
+
 class PlasticCriteria {
 	def _clazz
 	def _maxRes
@@ -16,6 +18,7 @@ class PlasticCriteria {
 	def _criteriaValue
 	def _critOptions
 	def _propertyAlias = [:]
+    List<String> _innerJoins = []
 
 	def uniqueResult
 
@@ -289,6 +292,13 @@ class PlasticCriteria {
 		} else{
 			throw new RuntimeException("Operation '${criList.tp}' not implemented.")
 		}
+        // If one of the inner joined property is missing, result would not be returned
+        _innerJoins.each { innerJoinPropKey ->
+            def property = __getProperty(obj, innerJoinPropKey)
+            if (property == null || (property instanceof Collection && property.isEmpty())) {
+                gotoParadise = false
+            }
+        }
 		return gotoParadise
 	}
 
@@ -365,9 +375,18 @@ class PlasticCriteria {
 		// nope
 	}
 
-	def createAlias(property, propertyAlias) {
-		_propertyAlias.put(propertyAlias, property)
-	}
+    def createAlias(property, propertyAlias) {
+        createAlias(property, propertyAlias, CriteriaSpecification.INNER_JOIN)
+    }
+
+    def createAlias(property, propertyAlias, int critSpec) {
+        if (critSpec == CriteriaSpecification.FULL_JOIN) {
+            throw new UnsupportedOperationException("Full joins are not supported as of PlasticCriteria 1.5.2")
+        } else if (critSpec == CriteriaSpecification.INNER_JOIN) {
+            _innerJoins << propertyAlias
+        }
+        _propertyAlias.put(propertyAlias, property)
+    }
 
 	def cache(enableCache) {
 		// nope
