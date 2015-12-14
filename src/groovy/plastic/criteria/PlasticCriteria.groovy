@@ -42,7 +42,9 @@ class PlasticCriteria {
 		"neProperty":{ _instanceValue != _criteriaValue },
 		"gtProperty":{ _instanceValue > _criteriaValue },
 		"ltProperty":{ _instanceValue < _criteriaValue },
-		"inList":{ _instanceValue in _criteriaValue }
+		"inList":{ _instanceValue in _criteriaValue },
+        "isEmpty":{ !_instanceValue || _instanceValue.isEmpty() },
+        "isNotEmpty":{ _instanceValue && !_instanceValue.isEmpty() }
 	]
 
 	PlasticCriteria(List list){

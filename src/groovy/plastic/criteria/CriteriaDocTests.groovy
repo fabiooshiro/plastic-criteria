@@ -769,4 +769,22 @@ class CriteriaDocTests {
         }
         assert count == 2
     }
+
+    // version 1.5.3
+    void testEmptinessRestriction() {
+        def portinari = new Artist(name: 'Portinari').save()
+        new Portrait(artist: portinari, name: 'Retirantes').save()
+        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+        def pablo = new Artist(name: 'Pablo').save()
+        def result1 = Artist.withCriteria {
+            isEmpty("portraits")
+        }
+        assert result1.size() == 1
+        assert result1[0] == pablo
+        def result2 = Artist.withCriteria {
+            isNotEmpty("portraits")
+        }
+        assert result2.size() == 1
+        assert result2[0] == portinari
+    }
 }
