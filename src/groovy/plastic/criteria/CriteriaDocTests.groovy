@@ -37,7 +37,7 @@ class CriteriaDocTests {
 				groupProperty('artist')
 			}
 		}
-		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
+		assert [[10.00, pablo], [20.00, salvador]].toSet() ==  artistValue.toSet()
 	}
 
 	void testAnd() {
