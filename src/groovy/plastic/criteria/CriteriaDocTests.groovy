@@ -798,17 +798,20 @@ class CriteriaDocTests {
         new Portrait(artist: pablo, name: 'Asleep').save()
 
         def result1 = Artist.withCriteria {
+            createAlias 'portraits', 'portraits'
             eq 'portraits.name', 'something'
         }
         assert result1.size() == 0
 
         def result2 = Artist.withCriteria {
+            createAlias 'portraits', 'portraits'
             eq 'portraits.name', 'Retirantes'
         }
         assert result2.size() == 1
         assert result2[0] == portinari
 
         def result3 = Artist.withCriteria {
+            createAlias 'portraits', 'portraits'
             eq 'portraits.name', 'asleep', [ignoreCase: true]
         }
         assert result3.size() == 1
