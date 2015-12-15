@@ -787,4 +787,31 @@ class CriteriaDocTests {
         assert result2.size() == 1
         assert result2[0] == portinari
     }
+
+    // version 1.5.4
+    void testEqForCollections() {
+        def portinari = new Artist(name: 'Portinari').save()
+        new Portrait(artist: portinari, name: 'Retirantes').save()
+        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+        def pablo = new Artist(name: 'Pablo').save()
+        new Portrait(artist: pablo, name: 'Les Demoiselles d’Avignon').save()
+        new Portrait(artist: pablo, name: 'Asleep').save()
+
+        def result1 = Artist.withCriteria {
+            eq 'portraits.name', 'something'
+        }
+        assert result1.size() == 0
+
+        def result2 = Artist.withCriteria {
+            eq 'portraits.name', 'Retirantes'
+        }
+        assert result2.size() == 1
+        assert result2[0] == portinari
+
+        def result3 = Artist.withCriteria {
+            eq 'portraits.name', 'asleep', [ignoreCase: true]
+        }
+        assert result3.size() == 1
+        assert result3[0] == pablo
+    }
 }
