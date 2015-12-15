@@ -817,4 +817,34 @@ class CriteriaDocTests {
         assert result3.size() == 1
         assert result3[0] == pablo
     }
+
+	void testInListForInstanceValueAsCollection(){
+		def portinari = new Artist(name: 'Portinari').save()
+		def portinari2 = new Artist(name: 'Portinari2').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+
+		def result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			inList 'portraits.name', 'Retirantes'
+		}
+		assert result1.size() == 1
+
+
+		new Portrait(artist: portinari, name: 'Soleil levant').save()
+		result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			inList 'portraits.name', 'Retirantes'
+		}
+		assert result1.size() == 1
+
+		new Portrait(artist: portinari2, name: 'Mona').save()
+		result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			inList 'portraits.name', ['Retirantes', 'Mona']
+		}
+		assert result1.size() == 2
+		assert result1[0] == portinari
+		assert result1[1] == portinari2
+	}
+
 }
