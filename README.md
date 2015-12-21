@@ -1,7 +1,8 @@
 PlasticCriteria
 ===================
-
+<!--
 [![Build Status](https://travis-ci.org/fabiooshiro/plastic-criteria.png?branch=master)](https://travis-ci.org/fabiooshiro/plastic-criteria)
+-->
 
 From FakePlasticCriteria renamed to just PlasticCriteria.
 
@@ -83,3 +84,7 @@ https://github.com/fabiooshiro/plastic-criteria/blob/master/src/groovy/plastic/c
 <a href="https://twitter.com/fabiooshiro">Sr. Oshiro</a>,
 <a href="http://www.facebook.com/MaxMustang23">Max Mustang</a>,
 <a href="https://twitter.com/dtuler">Danilo Tuler</a>
+
+## Special thx
+<a href="https://github.com/frozenspider">frozenspider</a>
+<a href="https://github.com/srybakov">srybakov</a>
