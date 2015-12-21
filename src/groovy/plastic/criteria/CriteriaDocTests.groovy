@@ -37,7 +37,7 @@ class CriteriaDocTests {
 				groupProperty('artist')
 			}
 		}
-		assert [[10.00, pablo], [20.00, salvador]] ==  artistValue
+		assert [[10.00, pablo], [20.00, salvador]].toSet() ==  artistValue.toSet()
 	}
 
 	void testAnd() {
@@ -787,4 +787,64 @@ class CriteriaDocTests {
         assert result2.size() == 1
         assert result2[0] == portinari
     }
+
+    // version 1.5.4
+    void testEqForCollections() {
+        def portinari = new Artist(name: 'Portinari').save()
+        new Portrait(artist: portinari, name: 'Retirantes').save()
+        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+        def pablo = new Artist(name: 'Pablo').save()
+        new Portrait(artist: pablo, name: 'Les Demoiselles d’Avignon').save()
+        new Portrait(artist: pablo, name: 'Asleep').save()
+
+        def result1 = Artist.withCriteria {
+            createAlias 'portraits', 'portraits'
+            eq 'portraits.name', 'something'
+        }
+        assert result1.size() == 0
+
+        def result2 = Artist.withCriteria {
+            createAlias 'portraits', 'portraits'
+            eq 'portraits.name', 'Retirantes'
+        }
+        assert result2.size() == 1
+        assert result2[0] == portinari
+
+        def result3 = Artist.withCriteria {
+            createAlias 'portraits', 'portraits'
+            eq 'portraits.name', 'asleep', [ignoreCase: true]
+        }
+        assert result3.size() == 1
+        assert result3[0] == pablo
+    }
+
+	void testInListForInstanceValueAsCollection(){
+		def portinari = new Artist(name: 'Portinari').save()
+		def portinari2 = new Artist(name: 'Portinari2').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+
+		def result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			inList 'portraits.name', 'Retirantes'
+		}
+		assert result1.size() == 1
+
+
+		new Portrait(artist: portinari, name: 'Soleil levant').save()
+		result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			inList 'portraits.name', 'Retirantes'
+		}
+		assert result1.size() == 1
+
+		new Portrait(artist: portinari2, name: 'Mona').save()
+		result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			inList 'portraits.name', ['Retirantes', 'Mona']
+		}
+		assert result1.size() == 2
+		assert result1[0] == portinari
+		assert result1[1] == portinari2
+	}
+
 }

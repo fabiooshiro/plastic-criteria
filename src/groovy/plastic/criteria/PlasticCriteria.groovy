@@ -29,7 +29,11 @@ class PlasticCriteria {
 		"lt":{ _instanceValue  < _criteriaValue },
 		"gt":{ _instanceValue  > _criteriaValue },
 		"ge":{ _instanceValue >= _criteriaValue },
-		"eq":{ (_critOptions?.ignoreCase) ? _instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: _instanceValue == _criteriaValue },
+        "eq":{
+            Closure<Boolean> condition = { instanceValue ->
+                (_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
+            }
+            _instanceValue instanceof Collection ? _instanceValue.any(condition) : condition(_instanceValue)},
 		"in":{ _instanceValue in _criteriaValue },
 		"ne":{ _instanceValue != _criteriaValue },
 		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
@@ -42,8 +46,8 @@ class PlasticCriteria {
 		"neProperty":{ _instanceValue != _criteriaValue },
 		"gtProperty":{ _instanceValue > _criteriaValue },
 		"ltProperty":{ _instanceValue < _criteriaValue },
-		"inList":{ _instanceValue in _criteriaValue },
-        "isEmpty":{ !_instanceValue || _instanceValue.isEmpty() },
+		"inList":{ ![_instanceValue].flatten().disjoint([_criteriaValue].flatten()) },
+		"isEmpty":{ !_instanceValue || _instanceValue.isEmpty() },
         "isNotEmpty":{ _instanceValue && !_instanceValue.isEmpty() }
 	]
 
