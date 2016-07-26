@@ -24,7 +24,7 @@ Grails 2.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
         // (...) another plugins
 
         // add this line
-        test ":plastic-criteria:1.2"
+        test ":plastic-criteria:1.6"
     }
     // (...)
 ```
