@@ -18,7 +18,7 @@ class PlasticCriteria {
 	def _criteriaValue
 	def _critOptions
 	def _propertyAlias = [:]
-    List<String> _innerJoins = []
+	List<String> _innerJoins = []
 
 	def uniqueResult
 
@@ -29,11 +29,11 @@ class PlasticCriteria {
 		"lt":{ _instanceValue  < _criteriaValue },
 		"gt":{ _instanceValue  > _criteriaValue },
 		"ge":{ _instanceValue >= _criteriaValue },
-        "eq":{
-            Closure<Boolean> condition = { instanceValue ->
-                (_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
-            }
-            _instanceValue instanceof Collection ? _instanceValue.any(condition) : condition(_instanceValue)},
+		"eq":{
+			Closure<Boolean> condition = { instanceValue ->
+				(_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
+			}
+			_instanceValue instanceof Collection ? _instanceValue.any(condition) : condition(_instanceValue)},
 		"in":{ _instanceValue in _criteriaValue },
 		"ne":{ _instanceValue != _criteriaValue },
 		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
@@ -48,7 +48,7 @@ class PlasticCriteria {
 		"ltProperty":{ _instanceValue < _criteriaValue },
 		"inList":{ ![_instanceValue].flatten().disjoint([_criteriaValue].flatten()) },
 		"isEmpty":{ !_instanceValue || _instanceValue.isEmpty() },
-        "isNotEmpty":{ _instanceValue && !_instanceValue.isEmpty() }
+		"isNotEmpty":{ _instanceValue && !_instanceValue.isEmpty() }
 	]
 
 	PlasticCriteria(List list){
@@ -93,6 +93,11 @@ class PlasticCriteria {
 
 	def distinct(prop){
 		_distinctProp = prop
+	}
+
+	def countDistinct(prop) {
+		_hasCalcProp = true
+		_props.add("countDistinct $prop")
 	}
 
 	def property(prop){
@@ -206,21 +211,18 @@ class PlasticCriteria {
 							anValue?:0.0
 						}
 						rsItem.add(isAllNull ? null : sumResult)
+					}else if(prop.startsWith('countDistinct ')){
+						rsItem << vls."${prop.substring(14)}".unique(false).size()
 					}else if(prop.startsWith('rowCount ')){
-						rsItem.add(vls.size())
+						rsItem << vls.size()
 					}else if(prop.startsWith('avg ')){
-						rsItem.add(vls.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
+						rsItem << (vls.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
 					}else if(prop.startsWith('min ')){
-						def min
-						vls.each{ if(min == null || it."${prop.substring(4)}" < min) min = it."${prop.substring(4)}" }
-						rsItem.add(min)
+						rsItem << vls."${prop.substring(4)}".min()
 					}else if(prop.startsWith('max ')){
-						def max
-						vls.each{ if(max == null || it."${prop.substring(4)}" > max) max = it."${prop.substring(4)}" }
-						rsItem.add(max)
+						rsItem << vls."${prop.substring(4)}".max()
 					}else{
-						def gp = vls.first()
-						rsItem << _getProp(gp, prop)
+						rsItem << _getProp(vls.first(), prop)
 					}
 				}
 				rs.add(_props.size() == 1 ? rsItem[0] : rsItem)
@@ -251,20 +253,20 @@ class PlasticCriteria {
 		return _handleUniqueResult(_maxAndOffset(ls))
 	}
 
-    def count(params, Closure clos){
-        list(params, clos).size()
-    }
+	def count(params, Closure clos){
+		list(params, clos).size()
+	}
 
-    def count(Closure clos) {
-        list(clos).size()
-    }
+	def count(Closure clos) {
+		list(clos).size()
+	}
 
 	def _maxAndOffset(ls){
 		if(_offset >= ls.size() || ls.size() == 0) return []
-        if(_offset) ls = ls[_offset..-1]
-        if(_maxRes) ls = ls[0..(Math.min(_maxRes,ls.size())-1)]
-        ls
-    }
+		if(_offset) ls = ls[_offset..-1]
+		if(_maxRes) ls = ls[0..(Math.min(_maxRes,ls.size())-1)]
+		ls
+	}
 
 	def _handleUniqueResult(ls){
 		if(uniqueResult){
@@ -306,13 +308,13 @@ class PlasticCriteria {
 		} else{
 			throw new RuntimeException("Operation '${criList.tp}' not implemented.")
 		}
-        // If one of the inner joined property is missing, result would not be returned
-        _innerJoins.each { innerJoinPropKey ->
-            def property = __getProperty(obj, innerJoinPropKey)
-            if (property == null || (property instanceof Collection && property.isEmpty())) {
-                gotoParadise = false
-            }
-        }
+		// If one of the inner joined property is missing, result would not be returned
+		_innerJoins.each { innerJoinPropKey ->
+			def property = __getProperty(obj, innerJoinPropKey)
+			if (property == null || (property instanceof Collection && property.isEmpty())) {
+				gotoParadise = false
+			}
+		}
 		return gotoParadise
 	}
 
@@ -389,18 +391,18 @@ class PlasticCriteria {
 		// nope
 	}
 
-    def createAlias(property, propertyAlias) {
-        createAlias(property, propertyAlias, CriteriaSpecification.INNER_JOIN)
-    }
+	def createAlias(property, propertyAlias) {
+		createAlias(property, propertyAlias, CriteriaSpecification.INNER_JOIN)
+	}
 
-    def createAlias(property, propertyAlias, int critSpec) {
-        if (critSpec == CriteriaSpecification.FULL_JOIN) {
-            throw new UnsupportedOperationException("Full joins are not supported as of PlasticCriteria 1.5.2")
-        } else if (critSpec == CriteriaSpecification.INNER_JOIN) {
-            _innerJoins << propertyAlias
-        }
-        _propertyAlias.put(propertyAlias, property)
-    }
+	def createAlias(property, propertyAlias, int critSpec) {
+		if (critSpec == CriteriaSpecification.FULL_JOIN) {
+			throw new UnsupportedOperationException("Full joins are not supported as of PlasticCriteria 1.5.2")
+		} else if (critSpec == CriteriaSpecification.INNER_JOIN) {
+			_innerJoins << propertyAlias
+		}
+		_propertyAlias.put(propertyAlias, property)
+	}
 
 	def cache(enableCache) {
 		// nope

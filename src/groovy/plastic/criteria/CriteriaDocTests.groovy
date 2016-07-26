@@ -432,9 +432,9 @@ class CriteriaDocTests {
 		new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		def rs = Portrait.withCriteria {
 			eq('artist', monet)
-	        fetchMode('artist', FetchMode.JOIN)
-    	}
-    	assert 1 == rs.size()
+			fetchMode('artist', FetchMode.JOIN)
+		}
+		assert 1 == rs.size()
 	}
 
 	void test_unique_result() {
@@ -442,9 +442,9 @@ class CriteriaDocTests {
 		def portrait = new Portrait(artist: monet, name: 'Soleil levant 1').save()
 		def result = Portrait.withCriteria {
 			eq('artist', monet)
-	        uniqueResult = true
-    	}
-    	assert result == portrait
+			uniqueResult = true
+		}
+		assert result == portrait
 	}
 
 	void test_unique_result_exception() {
@@ -454,21 +454,21 @@ class CriteriaDocTests {
 		try {
 			Portrait.withCriteria {
 				eq('artist', monet)
-		        uniqueResult = true
-	    	}
-	    	fail("should throw an exception")
-    	} catch (org.hibernate.NonUniqueResultException e) {
-    		// ok
-    	}
+				uniqueResult = true
+			}
+			fail("should throw an exception")
+		} catch (org.hibernate.NonUniqueResultException e) {
+			// ok
+		}
 	}
 
 	void test_unique_result_null() {
 		def monet = new Artist(name: 'Monet').save()
 		def res = Portrait.withCriteria {
 			eq('artist', monet)
-	        uniqueResult = true
-    	}
-	    assert res == null
+			uniqueResult = true
+		}
+		assert res == null
 	}
 
 	void test_plastic_criteria_over_arrayList() {
@@ -730,93 +730,93 @@ class CriteriaDocTests {
 		assert list.size() == 3
 	}
 
-    // version 1.5.2
-    void testCreateAliasJoins() {
-        def portinari = new Artist(name: "Portinari").save()
-        def leftJoinList = Artist.withCriteria {
-            createAlias("portraits", "ps", CriteriaSpecification.LEFT_JOIN) 
-            eq("name", portinari.name)
-        }
-        assert leftJoinList.size() == 1
-        def innerJoinList = Artist.withCriteria {
-            createAlias("portraits", "ps", CriteriaSpecification.INNER_JOIN)
-            eq("name", portinari.name)
-        }
-        assert innerJoinList.size() == 0
-        // No join specified, defaults to inner join anyway
-        def defaultJoinList = Artist.withCriteria {
-            createAlias("portraits", "ps")
-            eq("name", portinari.name)
-        }
-        assert defaultJoinList.size() == 0
-    }
+	// version 1.5.2
+	void testCreateAliasJoins() {
+		def portinari = new Artist(name: "Portinari").save()
+		def leftJoinList = Artist.withCriteria {
+			createAlias("portraits", "ps", CriteriaSpecification.LEFT_JOIN) 
+			eq("name", portinari.name)
+		}
+		assert leftJoinList.size() == 1
+		def innerJoinList = Artist.withCriteria {
+			createAlias("portraits", "ps", CriteriaSpecification.INNER_JOIN)
+			eq("name", portinari.name)
+		}
+		assert innerJoinList.size() == 0
+		// No join specified, defaults to inner join anyway
+		def defaultJoinList = Artist.withCriteria {
+			createAlias("portraits", "ps")
+			eq("name", portinari.name)
+		}
+		assert defaultJoinList.size() == 0
+	}
 
-    // version 1.5.2
-    void testCriteriaCount() {
-        def portinari = new Artist(name: 'Portinari').save()
-        new Portrait(artist: portinari, name: 'Retirantes').save()
-        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
-        def list = Portrait.withCriteria {
-            artist {
-                eq("name", portinari.name)
-            }
-        }
-        assert list.size() == 2
-        def count = Portrait.createCriteria().count {
-            artist {
-                eq("name", portinari.name)
-            }
-        }
-        assert count == 2
-    }
+	// version 1.5.2
+	void testCriteriaCount() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		def list = Portrait.withCriteria {
+			artist {
+				eq("name", portinari.name)
+			}
+		}
+		assert list.size() == 2
+		def count = Portrait.createCriteria().count {
+			artist {
+				eq("name", portinari.name)
+			}
+		}
+		assert count == 2
+	}
 
-    // version 1.5.3
-    void testEmptinessRestriction() {
-        def portinari = new Artist(name: 'Portinari').save()
-        new Portrait(artist: portinari, name: 'Retirantes').save()
-        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
-        def pablo = new Artist(name: 'Pablo').save()
-        def result1 = Artist.withCriteria {
-            isEmpty("portraits")
-        }
-        assert result1.size() == 1
-        assert result1[0] == pablo
-        def result2 = Artist.withCriteria {
-            isNotEmpty("portraits")
-        }
-        assert result2.size() == 1
-        assert result2[0] == portinari
-    }
+	// version 1.5.3
+	void testEmptinessRestriction() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		def pablo = new Artist(name: 'Pablo').save()
+		def result1 = Artist.withCriteria {
+			isEmpty("portraits")
+		}
+		assert result1.size() == 1
+		assert result1[0] == pablo
+		def result2 = Artist.withCriteria {
+			isNotEmpty("portraits")
+		}
+		assert result2.size() == 1
+		assert result2[0] == portinari
+	}
 
-    // version 1.5.4
-    void testEqForCollections() {
-        def portinari = new Artist(name: 'Portinari').save()
-        new Portrait(artist: portinari, name: 'Retirantes').save()
-        new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
-        def pablo = new Artist(name: 'Pablo').save()
-        new Portrait(artist: pablo, name: 'Les Demoiselles d’Avignon').save()
-        new Portrait(artist: pablo, name: 'Asleep').save()
+	// version 1.5.4
+	void testEqForCollections() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		def pablo = new Artist(name: 'Pablo').save()
+		new Portrait(artist: pablo, name: 'Les Demoiselles d’Avignon').save()
+		new Portrait(artist: pablo, name: 'Asleep').save()
 
-        def result1 = Artist.withCriteria {
-            createAlias 'portraits', 'portraits'
-            eq 'portraits.name', 'something'
-        }
-        assert result1.size() == 0
+		def result1 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			eq 'portraits.name', 'something'
+		}
+		assert result1.size() == 0
 
-        def result2 = Artist.withCriteria {
-            createAlias 'portraits', 'portraits'
-            eq 'portraits.name', 'Retirantes'
-        }
-        assert result2.size() == 1
-        assert result2[0] == portinari
+		def result2 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			eq 'portraits.name', 'Retirantes'
+		}
+		assert result2.size() == 1
+		assert result2[0] == portinari
 
-        def result3 = Artist.withCriteria {
-            createAlias 'portraits', 'portraits'
-            eq 'portraits.name', 'asleep', [ignoreCase: true]
-        }
-        assert result3.size() == 1
-        assert result3[0] == pablo
-    }
+		def result3 = Artist.withCriteria {
+			createAlias 'portraits', 'portraits'
+			eq 'portraits.name', 'asleep', [ignoreCase: true]
+		}
+		assert result3.size() == 1
+		assert result3[0] == pablo
+	}
 
 	void testInListForInstanceValueAsCollection(){
 		def portinari = new Artist(name: 'Portinari').save()
@@ -845,6 +845,21 @@ class CriteriaDocTests {
 		assert result1.size() == 2
 		assert result1[0] == portinari
 		assert result1[1] == portinari2
+	}
+
+	// version 1.6
+	void testCountDistinct() {
+		new Artist(name: 'Portinari').save()
+		new Artist(name: 'Portinari').save()
+		new Artist(name: 'Pablo').save()
+		new Artist(name: 'Pablo').save()
+		new Artist(name: 'Salvador').save()
+		def result = Artist.withCriteria {
+			projections {
+				countDistinct('name')
+			}
+		}
+		assert result == [3]
 	}
 
 }
