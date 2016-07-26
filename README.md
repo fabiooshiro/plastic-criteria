@@ -1,8 +1,6 @@
 PlasticCriteria
 ===================
-<!--
-[![Build Status](https://travis-ci.org/fabiooshiro/plastic-criteria.png?branch=master)](https://travis-ci.org/fabiooshiro/plastic-criteria)
--->
+[![Build Status](https://travis-ci.org/fabiooshiro/plastic-criteria.svg?branch=master)](https://travis-ci.org/fabiooshiro/plastic-criteria)
 
 From FakePlasticCriteria renamed to just PlasticCriteria.
 
