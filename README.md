@@ -80,6 +80,12 @@ Full docs at:
 
 https://github.com/fabiooshiro/plastic-criteria/blob/master/src/groovy/plastic/criteria/CriteriaDocTests.groovy
 
+## How to Contribute
+
+write a test in CriteriaDocTests.groovy
+run ```grails test-app```
+if you see "tests passed" make me a pull request ;-)
+
 ## Committers
 <a href="https://twitter.com/fabiooshiro">Sr. Oshiro</a>,
 <a href="http://www.facebook.com/MaxMustang23">Max Mustang</a>,
