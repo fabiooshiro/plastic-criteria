@@ -95,5 +95,6 @@ if you see "tests passed" make me a pull request ;-)
 <a href="https://twitter.com/dtuler">Danilo Tuler</a>
 
 ## Special thx
+<a href="https://github.com/dtamm">dtamm</a>,
 <a href="https://github.com/frozenspider">frozenspider</a>,
 <a href="https://github.com/srybakov">srybakov</a>
