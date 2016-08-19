@@ -899,4 +899,31 @@ class CriteriaDocTests {
 		assert result.first().name == 'Salvador'
 	}
 
+  // version 1.6.2
+  void testMultipleCreateAlias() {
+    def paris = new City(name: 'Paris').save()
+		def monet = new Artist(name: 'Monet', city: paris).save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+
+		def rio = new City(name: 'Rio de Janeiro').save()
+		def portinari = new Artist(name: 'Portinari', city: rio).save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+
+		def diCavalcanti = new Artist(name: 'Di Cavalcanti', city: rio).save()
+		new Portrait(artist: diCavalcanti, name: 'Autorretrato Com Mulata').save()
+		
+		def result = Portrait.withCriteria {
+      projections {
+          createAlias("artist", "a")
+          groupProperty("a.name")
+      }
+      and {
+          createAlias("a.city", "c")
+          eq('c.name', 'Rio de Janeiro')
+      }
+		}
+		assert result.size() == 2
+    assert result.first() == 'Portinari'
+  }
 }
