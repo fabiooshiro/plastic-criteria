@@ -48,7 +48,9 @@ class PlasticCriteria {
 		"ltProperty":{ _instanceValue < _criteriaValue },
 		"inList":{ ![_instanceValue].flatten().disjoint([_criteriaValue].flatten()) },
 		"isEmpty":{ !_instanceValue || _instanceValue.isEmpty() },
-		"isNotEmpty":{ _instanceValue && !_instanceValue.isEmpty() }
+		"isNotEmpty":{ _instanceValue && !_instanceValue.isEmpty() },
+		"sizeEq": { _instanceValue?.size() == _criteriaValue || (_instanceValue == null && _criteriaValue == 0) },
+		"sizeNe": { !theImplementations.sizeEq() }
 	]
 
 	PlasticCriteria(List list){

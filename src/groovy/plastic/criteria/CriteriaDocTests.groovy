@@ -861,5 +861,42 @@ class CriteriaDocTests {
 		}
 		assert result == [3]
 	}
+	
+	// version 1.6.1
+	void testSizeEq() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		new Artist(name: 'Salvador').save()
+		def result = Artist.withCriteria {
+			sizeEq('portraits', 2)
+		}
+		assert result.size() == 1
+		assert result.first().name == 'Portinari'
+	}
+	
+	void testSizeEq_zero() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		new Artist(name: 'Salvador').save()
+		def result = Artist.withCriteria {
+			sizeEq('portraits', 0)
+		}
+		assert result.size() == 1
+		assert result.first().name == 'Salvador'
+	}
+	
+	void testSizeNe() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		new Artist(name: 'Salvador').save()
+		def result = Artist.withCriteria {
+			sizeNe('portraits', 2)
+		}
+		assert result.size() == 1
+		assert result.first().name == 'Salvador'
+	}
 
 }

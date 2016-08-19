@@ -80,8 +80,13 @@ https://github.com/fabiooshiro/plastic-criteria/blob/master/src/groovy/plastic/c
 
 ## How to Contribute
 
+create an account in c9 and open
+https://ide.c9.io/fabiooshiro/plastic-criteria
+
+or clone
+
 write a test in CriteriaDocTests.groovy
-run ```grails test-app```
+run ```./wgrails test-app```
 if you see "tests passed" make me a pull request ;-)
 
 ## Committers
