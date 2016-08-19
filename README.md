@@ -24,7 +24,7 @@ Grails 2.x edit your <your-project>/grails-app/conf/BuildConfig.groovy
         // (...) another plugins
 
         // add this line
-        test ":plastic-criteria:1.6"
+        test ":plastic-criteria:1.6.1"
     }
     // (...)
 ```
@@ -80,10 +80,10 @@ https://github.com/fabiooshiro/plastic-criteria/blob/master/src/groovy/plastic/c
 
 ## How to Contribute
 
-create an account in c9 and open
+Edit online!
 https://ide.c9.io/fabiooshiro/plastic-criteria
 
-or clone
+or clone in your machine
 
 write a test in CriteriaDocTests.groovy
 run ```./wgrails test-app```
