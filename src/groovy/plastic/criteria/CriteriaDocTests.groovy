@@ -898,5 +898,16 @@ class CriteriaDocTests {
 		assert result.size() == 1
 		assert result.first().name == 'Salvador'
 	}
-
+	
+	void testSizeNe_zero() {
+		def portinari = new Artist(name: 'Portinari').save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+		new Artist(name: 'Salvador').save()
+		def result = Artist.withCriteria {
+			sizeNe('portraits', 0)
+		}
+		assert result.size() == 1
+		assert result.first().name == 'Portinari'
+	}
 }
