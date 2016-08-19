@@ -33,7 +33,7 @@ class PlasticCriteria {
 			Closure<Boolean> condition = { instanceValue ->
 				(_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
 			}
-			_instanceValue instanceof Collection ? _instanceValue.any(condition) : condition(_instanceValue)},
+			_instanceValue instanceof Collection ? ((_critOptions?.ignoreCase) ? _instanceValue*.toLowerCase().contains(_criteriaValue?.toLowerCase()) : _instanceValue.contains(_criteriaValue)) : condition(_instanceValue)},
 		"in":{ _instanceValue in _criteriaValue },
 		"ne":{ _instanceValue != _criteriaValue },
 		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
@@ -294,6 +294,7 @@ class PlasticCriteria {
 		}
 		_instanceValue = _getProp(obj, cri.prop)
 		_critOptions = cri.opt
+		if(_instanceValue instanceof Collection) _instanceValue = _instanceValue?.flatten()
 		def result = theImplementations[cri.criteriaName]()
 		_SaintPeter.tell("    ${cri.criteriaName}('${_instanceValue}', '${_criteriaValue}') == ${result}")
 		return result
@@ -323,20 +324,79 @@ class PlasticCriteria {
 	def __getProperty(obj, propertyName){
 		def res = obj
 		def currentPath = []
-		propertyName.split('\\.').each {
-			currentPath << it
-			if (res == null) return
-			if (it == 'class') {
-				res = res.class.name
-			} else {
-				try {
-					res = res."$it"
-				} catch(MissingPropertyException e) {
-					res = res."${_propertyAlias[currentPath.join('.')]}"
-				}
-			}
-		}
-		return res
+    def propertyNameSplit = propertyName.split('\\.')
+    if(propertyNameSplit?.size() == 1) {
+        if (res == null) return
+  			if (propertyName == 'class') {
+          res = res.class.name
+  			} else {
+          try {
+        	  res = res."$propertyName"
+  				} catch(MissingPropertyException e) {
+            def currentPathJoin = currentPath?.join('.')
+  					if(currentPathJoin) res = res."${_propertyAlias[currentPath?.join('.')]}"
+            else {
+              //lets have a look into the alias map!
+              def aliasAvailable = _propertyAlias?.get(propertyName)
+              if(aliasAvailable && aliasAvailable.split('\\.')?.size() == 1) res = res."${aliasAvailable}"
+            }
+  				}
+        }
+    } else {
+      def wayToLookFor = []
+      for(def partNumber = 0; partNumber < propertyNameSplit?.size(); partNumber++) {
+        if(partNumber < (propertyNameSplit?.size() - 1)) {
+          def partHere = propertyNameSplit[partNumber]
+          //lets look for an Alias Name
+          def actualVariableName = _propertyAlias?.get(partHere)
+          def withoutCreateAlias = false
+          if(!actualVariableName) {
+              actualVariableName = partHere
+              withoutCreateAlias = true
+          }
+          //if the split size is more than 1, there seems to be another joint,
+          //so just look further!
+          def actualVariableNameSplit = actualVariableName?.split('\\.')
+          if(actualVariableNameSplit?.size() > 1) {
+            if(!withoutCreateAlias) wayToLookFor = [actualVariableNameSplit[1]] + wayToLookFor
+            else wayToLookFor = (wayToLookFor + [actualVariableNameSplit[1]])
+            while(actualVariableNameSplit?.size() > 1) {
+              def secondaryJoinName = actualVariableNameSplit[0]
+              actualVariableName = _propertyAlias?.get(secondaryJoinName)
+              if(!actualVariableName) {
+                  actualVariableName = secondaryJoinName
+                  withoutCreateAlias = true
+              }
+              if(!withoutCreateAlias) wayToLookFor = [secondaryJoinName] + wayToLookFor
+              else wayToLookFor = (wayToLookFor + [secondaryJoinName])
+              actualVariableNameSplit = actualVariableName?.split('\\.')
+            }
+          } else {
+            if(!withoutCreateAlias) wayToLookFor = [actualVariableName] + wayToLookFor
+            else wayToLookFor = (wayToLookFor + [actualVariableName])
+          }
+        } else {
+          //It is the actual variable name! No need to do research here.
+          wayToLookFor = (wayToLookFor + [propertyNameSplit[partNumber]])
+        }
+      }
+      wayToLookFor?.each {
+        currentPath << it
+  			if (res == null) return
+  			if (it == 'class') {
+          res = res.class.name
+  			} else {
+  				try {
+            res = res."$it"
+  				} catch(MissingPropertyException e) {
+            def currentPathJoin = currentPath?.join('.')
+  					if(currentPathJoin) res = res."${_propertyAlias[currentPath?.join('.')]}"
+            else res = res."${it}"
+  				}
+  			}
+  		}
+    }
+    return res
 	}
 
 	def _getProp(obj, propertyName){
