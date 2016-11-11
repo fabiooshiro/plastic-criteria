@@ -939,4 +939,31 @@ class CriteriaDocTests {
 		assert result.first() == 'Portinari'
 	}
 
+
+  // version 1.6.3
+	void testCountDistinctOnProjection() {
+    def paris = new City(name: 'Paris').save()
+		def monet = new Artist(name: 'Monet', city: paris).save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+
+		def rio = new City(name: 'Rio de Janeiro').save()
+		def portinari = new Artist(name: 'Portinari', city: rio).save()
+		new Portrait(artist: portinari, name: 'Retirantes').save()
+		new Portrait(artist: portinari, name: 'Paisagem de Brodowski').save()
+
+		def diCavalcanti = new Artist(name: 'Di Cavalcanti', city: rio).save()
+		new Portrait(artist: diCavalcanti, name: 'Autorretrato Com Mulata').save()
+		
+		def result = Artist.withCriteria {
+			projections {
+        groupProperty("id")
+				createAlias("portraits", "p")
+				countDistinct("p.id")
+			}
+		}
+		assert result.size() == 3
+		assert result[0] == [monet?.id, 1]
+    assert result[1] == [portinari?.id, 2]
+    assert result[2] == [diCavalcanti?.id, 1]
+	}
 }

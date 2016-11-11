@@ -25,7 +25,7 @@ class PlasticCriteriaTests extends CriteriaDocTests{
 			eq('name', 'not exists')
 		}
 
-		assert saintPeter.didYouSay("    eq('Soleil levant', 'not exists') == false")
+		assert saintPeter.didYouSay("    eq('name', 'not exists') == false")
 	}
 
 	void test_Saint_Peter_should_say_Hey_the_list_is_empty(){
