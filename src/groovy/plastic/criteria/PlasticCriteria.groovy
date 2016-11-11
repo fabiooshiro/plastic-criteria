@@ -149,7 +149,7 @@ class PlasticCriteria {
 		if(theImplementations.containsKey(name)){
 			_leCriticalList.ls.add([criteriaName: name, prop: _prefix + args[0], val: ((args.length > 1) ? args[1] : 'null'), opt: ((args.length > 2) ? args[2] : [:])])
 		}else{
-			if(!args || !(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
+      if(!args || !(args[0] instanceof Closure)) throw new MissingMethodException(name, this.class, args)
 			def fc = new PlasticCriteria(_clazz, _prefix + name)
 			args[0].resolveStrategy = Closure.DELEGATE_FIRST
 			args[0].delegate = fc
@@ -205,6 +205,29 @@ class PlasticCriteria {
 			def extractProps = { vls ->
 				def rsItem = []
 				_props.each{ prop ->
+          def allProjectionProperties = [
+            'sum ',
+            'countDistinct ',
+            'rowCount ',
+            'avg ',
+            'min ',
+            'max '
+          ]
+          def rememberProjectionPropertyStart
+          for(checkProperty in allProjectionProperties) {
+              if(prop.startsWith(checkProperty)) {
+                  rememberProjectionPropertyStart = checkProperty
+                  prop = prop?.replace(checkProperty, '')
+              }
+          }
+          def wayToLookFor = makeUpActualWay(prop)
+          def actualVls = vls
+          for(def wpp = 0; wpp < wayToLookFor?.size() - 1; wpp++) {
+              def wayPathPart = wayToLookFor[wpp]
+              vls = __getProperty(actualVls, wayPathPart)?.flatten()
+          }
+          prop = wayToLookFor[wayToLookFor?.size() - 1]
+          if(rememberProjectionPropertyStart) prop = "${rememberProjectionPropertyStart}${prop}"
 					if(prop.startsWith('sum ')){
 						def isAllNull = true
 						def sumResult = vls.sum(0.0){
@@ -254,6 +277,47 @@ class PlasticCriteria {
 		}
 		return _handleUniqueResult(_maxAndOffset(ls))
 	}
+  
+  def makeUpActualWay(String prop) {
+      def propertyNameSplit = prop?.split('\\.'), wayToLookFor = []
+      for(def partNumber = 0; partNumber < propertyNameSplit?.size(); partNumber++) {
+        if(partNumber < (propertyNameSplit?.size() - 1)) {
+          def partHere = propertyNameSplit[partNumber]
+          //lets look for an Alias Name
+          def actualVariableName = _propertyAlias?.get(partHere)
+          def withoutCreateAlias = false
+          if(!actualVariableName) {
+              actualVariableName = partHere
+              withoutCreateAlias = true
+          }
+          //if the split size is more than 1, there seems to be another joint,
+          //so just look further!
+          def actualVariableNameSplit = actualVariableName?.split('\\.')
+          if(actualVariableNameSplit?.size() > 1) {
+            if(!withoutCreateAlias) wayToLookFor = [actualVariableNameSplit[1]] + wayToLookFor
+            else wayToLookFor = (wayToLookFor + [actualVariableNameSplit[1]])
+            while(actualVariableNameSplit?.size() > 1) {
+              def secondaryJoinName = actualVariableNameSplit[0]
+              actualVariableName = _propertyAlias?.get(secondaryJoinName)
+              if(!actualVariableName) {
+                  actualVariableName = secondaryJoinName
+                  withoutCreateAlias = true
+              }
+              if(!withoutCreateAlias) wayToLookFor = [secondaryJoinName] + wayToLookFor
+              else wayToLookFor = (wayToLookFor + [secondaryJoinName])
+              actualVariableNameSplit = actualVariableName?.split('\\.')
+            }
+          } else {
+            if(!withoutCreateAlias) wayToLookFor = [actualVariableName] + wayToLookFor
+            else wayToLookFor = (wayToLookFor + [actualVariableName])
+          }
+        } else {
+          //It is the actual variable name! No need to do research here.
+          wayToLookFor = (wayToLookFor + [propertyNameSplit[partNumber]])
+        }
+      }
+      return wayToLookFor
+  }
 
 	def count(params, Closure clos){
 		list(params, clos).size()
@@ -296,7 +360,7 @@ class PlasticCriteria {
 		_critOptions = cri.opt
 		if(_instanceValue instanceof Collection) _instanceValue = _instanceValue?.flatten()
 		def result = theImplementations[cri.criteriaName]()
-		_SaintPeter.tell("    ${cri.criteriaName}('${_instanceValue}', '${_criteriaValue}') == ${result}")
+		_SaintPeter.tell("    ${cri.criteriaName}('${cri.prop}', '${_criteriaValue}') == ${result}")
 		return result
 	}
 
@@ -321,7 +385,7 @@ class PlasticCriteria {
 		return gotoParadise
 	}
 
-	def __getProperty(obj, propertyName){
+	def __getProperty(obj, propertyName) {
 		def res = obj
 		def currentPath = []
     def propertyNameSplit = propertyName.split('\\.')
@@ -343,43 +407,7 @@ class PlasticCriteria {
   				}
         }
     } else {
-      def wayToLookFor = []
-      for(def partNumber = 0; partNumber < propertyNameSplit?.size(); partNumber++) {
-        if(partNumber < (propertyNameSplit?.size() - 1)) {
-          def partHere = propertyNameSplit[partNumber]
-          //lets look for an Alias Name
-          def actualVariableName = _propertyAlias?.get(partHere)
-          def withoutCreateAlias = false
-          if(!actualVariableName) {
-              actualVariableName = partHere
-              withoutCreateAlias = true
-          }
-          //if the split size is more than 1, there seems to be another joint,
-          //so just look further!
-          def actualVariableNameSplit = actualVariableName?.split('\\.')
-          if(actualVariableNameSplit?.size() > 1) {
-            if(!withoutCreateAlias) wayToLookFor = [actualVariableNameSplit[1]] + wayToLookFor
-            else wayToLookFor = (wayToLookFor + [actualVariableNameSplit[1]])
-            while(actualVariableNameSplit?.size() > 1) {
-              def secondaryJoinName = actualVariableNameSplit[0]
-              actualVariableName = _propertyAlias?.get(secondaryJoinName)
-              if(!actualVariableName) {
-                  actualVariableName = secondaryJoinName
-                  withoutCreateAlias = true
-              }
-              if(!withoutCreateAlias) wayToLookFor = [secondaryJoinName] + wayToLookFor
-              else wayToLookFor = (wayToLookFor + [secondaryJoinName])
-              actualVariableNameSplit = actualVariableName?.split('\\.')
-            }
-          } else {
-            if(!withoutCreateAlias) wayToLookFor = [actualVariableName] + wayToLookFor
-            else wayToLookFor = (wayToLookFor + [actualVariableName])
-          }
-        } else {
-          //It is the actual variable name! No need to do research here.
-          wayToLookFor = (wayToLookFor + [propertyNameSplit[partNumber]])
-        }
-      }
+      def wayToLookFor = makeUpActualWay(propertyName)
       wayToLookFor?.each {
         currentPath << it
   			if (res == null) return
