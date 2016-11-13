@@ -34,7 +34,7 @@ class PlasticCriteria {
 				(_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
 			}
 			_instanceValue instanceof Collection ? ((_critOptions?.ignoreCase) ? _instanceValue*.toLowerCase().contains(_criteriaValue?.toLowerCase()) : _instanceValue.contains(_criteriaValue)) : condition(_instanceValue)},
-		"in":{ _instanceValue in _criteriaValue },
+		"in":{ _instanceValue?.intersect(_criteriaValue)?.size() > 0 },
 		"ne":{ _instanceValue != _criteriaValue },
 		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
 		"like":{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
