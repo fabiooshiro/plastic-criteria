@@ -34,7 +34,10 @@ class PlasticCriteria {
 				(_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
 			}
 			_instanceValue instanceof Collection ? ((_critOptions?.ignoreCase) ? _instanceValue*.toLowerCase().contains(_criteriaValue?.toLowerCase()) : _instanceValue.contains(_criteriaValue)) : condition(_instanceValue)},
-		"in":{ _instanceValue in _criteriaValue },
+		"in": { 
+        if(!(_instanceValue instanceof Collection)) _instanceValue = [_instanceValue]
+        _instanceValue?.intersect(_criteriaValue?.flatten())?.size() > 0 
+    },
 		"ne":{ _instanceValue != _criteriaValue },
 		"ilike":{ ('' + _instanceValue).toLowerCase() ==~ _criteriaValue.replace('%','.*').toLowerCase() },
 		"like":{ ('' + _instanceValue) ==~ _criteriaValue.replace('%','.*') },
@@ -358,7 +361,7 @@ class PlasticCriteria {
 		}
 		_instanceValue = _getProp(obj, cri.prop)
 		_critOptions = cri.opt
-		if(_instanceValue instanceof Collection) _instanceValue = _instanceValue?.flatten()
+    if(_instanceValue instanceof Collection) _instanceValue = _instanceValue?.flatten()
 		def result = theImplementations[cri.criteriaName]()
 		_SaintPeter.tell("    ${cri.criteriaName}('${cri.prop}', '${_criteriaValue}') == ${result}")
 		return result
@@ -366,7 +369,7 @@ class PlasticCriteria {
 
 	def knokinOnHeavensDoor(criList, obj){
 		def gotoParadise
-		if(criList.tp == 'and'){
+    if(criList.tp == 'and'){
 			gotoParadise = !criList.ls.any{ it.criteriaName ? !_runCriteria(it, obj) : !knokinOnHeavensDoor(it, obj) }
 		} else if(criList.tp == 'or'){
 			gotoParadise = criList.ls.any{ it.criteriaName ? _runCriteria(it, obj) : knokinOnHeavensDoor(it, obj) }
