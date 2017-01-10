@@ -34,7 +34,7 @@ class PlasticCriteria {
 				(_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
 			}
 			_instanceValue instanceof Collection ? ((_critOptions?.ignoreCase) ? _instanceValue*.toLowerCase().contains(_criteriaValue?.toLowerCase()) : _instanceValue.contains(_criteriaValue)) : condition(_instanceValue)},
-		"in": { 
+		"in": {
         if(!(_instanceValue instanceof Collection)) _instanceValue = [_instanceValue]
         _instanceValue?.intersect(_criteriaValue?.flatten())?.size() > 0 
     },
@@ -240,20 +240,20 @@ class PlasticCriteria {
 						}
 						rsItem.add(isAllNull ? null : sumResult)
 					}else if(prop.startsWith('countDistinct ')){
-						rsItem << vls."${prop.substring(14)}".unique(false).size()
+						rsItem << vls?."${prop.substring(14)}"?.unique(false)?.size()
 					}else if(prop.startsWith('rowCount ')){
-						rsItem << vls.size()
+						rsItem << vls?.size()
 					}else if(prop.startsWith('avg ')){
-						rsItem << (vls.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
+						rsItem << (vls?.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
 					}else if(prop.startsWith('min ')){
-						rsItem << vls."${prop.substring(4)}".min()
+						rsItem << vls?."${prop.substring(4)}"?.min()
 					}else if(prop.startsWith('max ')){
-						rsItem << vls."${prop.substring(4)}".max()
+						rsItem << vls?."${prop.substring(4)}"?.max()
 					}else{
-						rsItem << _getProp(vls.first(), prop)
+						rsItem << _getProp(vls?.first(), prop)
 					}
 				}
-				rs.add(_props.size() == 1 ? rsItem[0] : rsItem)
+				if(rsItem) rs.add(_props.size() == 1 ? rsItem[0] : rsItem)
 			}
 			if(_groupProps){
 				ls.groupBy{ item ->
