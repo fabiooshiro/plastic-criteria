@@ -231,27 +231,29 @@ class PlasticCriteria {
           }
           prop = wayToLookFor[wayToLookFor?.size() - 1]
           if(rememberProjectionPropertyStart) prop = "${rememberProjectionPropertyStart}${prop}"
-					if(prop.startsWith('sum ')){
-						def isAllNull = true
-						def sumResult = vls.sum(0.0){
-							def anValue = it."${prop.substring(4)}"
-							isAllNull = isAllNull && anValue == null
-							anValue?:0.0
-						}
-						rsItem.add(isAllNull ? null : sumResult)
-					}else if(prop.startsWith('countDistinct ')){
-						rsItem << vls?."${prop.substring(14)}"?.unique(false)?.size()
-					}else if(prop.startsWith('rowCount ')){
-						rsItem << vls?.size()
-					}else if(prop.startsWith('avg ')){
-						rsItem << (vls?.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
-					}else if(prop.startsWith('min ')){
-						rsItem << vls?."${prop.substring(4)}"?.min()
-					}else if(prop.startsWith('max ')){
-						rsItem << vls?."${prop.substring(4)}"?.max()
-					}else{
-						rsItem << _getProp(vls?.first(), prop)
-					}
+          if(vls) {
+  					if(prop.startsWith('sum ')){
+  						def isAllNull = true
+  						def sumResult = vls.sum(0.0){
+  							def anValue = it."${prop.substring(4)}"
+  							isAllNull = isAllNull && anValue == null
+  							anValue?:0.0
+  						}
+  						rsItem.add(isAllNull ? null : sumResult)
+  					}else if(prop.startsWith('countDistinct ')){
+  						rsItem << vls?."${prop.substring(14)}"?.unique(false)?.size()
+  					}else if(prop.startsWith('rowCount ')){
+  						rsItem << vls?.size()
+  					}else if(prop.startsWith('avg ')){
+  						rsItem << (vls?.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
+  					}else if(prop.startsWith('min ')){
+  						rsItem << vls?."${prop.substring(4)}"?.min()
+  					}else if(prop.startsWith('max ')){
+  						rsItem << vls?."${prop.substring(4)}"?.max()
+  					}else{
+  						rsItem << _getProp(vls?.first(), prop)
+  					}
+          }
 				}
 				if(rsItem) rs.add(_props.size() == 1 ? rsItem[0] : rsItem)
 			}
