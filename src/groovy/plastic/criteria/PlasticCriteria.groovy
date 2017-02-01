@@ -34,7 +34,7 @@ class PlasticCriteria {
 				(_critOptions?.ignoreCase) ? instanceValue?.toLowerCase() == _criteriaValue?.toLowerCase()	: instanceValue == _criteriaValue
 			}
 			_instanceValue instanceof Collection ? ((_critOptions?.ignoreCase) ? _instanceValue*.toLowerCase().contains(_criteriaValue?.toLowerCase()) : _instanceValue.contains(_criteriaValue)) : condition(_instanceValue)},
-		"in": { 
+		"in": {
         if(!(_instanceValue instanceof Collection)) _instanceValue = [_instanceValue]
         _instanceValue?.intersect(_criteriaValue?.flatten())?.size() > 0 
     },
@@ -224,40 +224,41 @@ class PlasticCriteria {
               }
           }
           def wayToLookFor = makeUpActualWay(prop)
-          def actualVls = vls
+          def actualVls = vls, vlsToUse
+          if(wayToLookFor?.size() == 1) vlsToUse = vls
           for(def wpp = 0; wpp < wayToLookFor?.size() - 1; wpp++) {
               def wayPathPart = wayToLookFor[wpp]
-              vls = __getProperty(actualVls, wayPathPart)?.flatten()
+              vlsToUse = __getProperty(actualVls, wayPathPart)?.flatten()
           }
           prop = wayToLookFor[wayToLookFor?.size() - 1]
           if(rememberProjectionPropertyStart) prop = "${rememberProjectionPropertyStart}${prop}"
-					if(prop.startsWith('sum ')){
-						def isAllNull = true
-						def sumResult = vls.sum(0.0){
-							def anValue = it."${prop.substring(4)}"
-							isAllNull = isAllNull && anValue == null
-							anValue?:0.0
-						}
-						rsItem.add(isAllNull ? null : sumResult)
-					}else if(prop.startsWith('countDistinct ')){
-						rsItem << vls."${prop.substring(14)}".unique(false).size()
-					}else if(prop.startsWith('rowCount ')){
-						rsItem << vls.size()
-					}else if(prop.startsWith('avg ')){
-						rsItem << (vls.size() ? (vls.sum(0.0){it."${prop.substring(4)}"} / vls.size() ) : null)
-					}else if(prop.startsWith('min ')){
-						rsItem << vls."${prop.substring(4)}".min()
-					}else if(prop.startsWith('max ')){
-						rsItem << vls."${prop.substring(4)}".max()
-					}else{
-						rsItem << _getProp(vls.first(), prop)
-					}
+  					if(prop.startsWith('sum ')){
+  						def isAllNull = true
+  						def sumResult = vls.sum(0.0){
+  							def anValue = it."${prop.substring(4)}"
+  							isAllNull = isAllNull && anValue == null
+  							anValue?:0.0
+  						}
+  						rsItem.add(isAllNull ? null : sumResult)
+  					}else if(prop.startsWith('countDistinct ')){
+  						rsItem << vlsToUse?."${prop.substring(14)}"?.unique(false)?.size()
+  					}else if(prop.startsWith('rowCount ')){
+  						rsItem << vlsToUse?.size()
+  					}else if(prop.startsWith('avg ')){
+  						rsItem << (vlsToUse?.size() ? (vlsToUse.sum(0.0){it."${prop.substring(4)}"} / vlsToUse.size() ) : null)
+  					}else if(prop.startsWith('min ')){
+  						rsItem << vlsToUse?."${prop.substring(4)}"?.min()
+  					}else if(prop.startsWith('max ')){
+  						rsItem << vlsToUse?."${prop.substring(4)}"?.max()
+  					}else{
+  						rsItem << _getProp(((vlsToUse) ? vlsToUse?.first() : actualVls), prop)
+  					}
 				}
 				rs.add(_props.size() == 1 ? rsItem[0] : rsItem)
 			}
 			if(_groupProps){
 				ls.groupBy{ item ->
-					_groupProps.collect{ groupProp ->
+          _groupProps.collect{ groupProp ->
 						_getProp(item, groupProp)
 					}
 				}.each{ k, vls ->
@@ -278,7 +279,7 @@ class PlasticCriteria {
 			}
 			ls = rs
 		}
-		return _handleUniqueResult(_maxAndOffset(ls))
+    return _handleUniqueResult(_maxAndOffset(ls))
 	}
   
   def makeUpActualWay(String prop) {
@@ -434,12 +435,12 @@ class PlasticCriteria {
 		def res
 		if(propertyName instanceof List){
 			res = propertyName.collect{ pname ->
-				__getProperty(obj, pname)
+        __getProperty(obj, pname)
 			}
 		} else {
-			res = __getProperty(obj, propertyName)
+      res = __getProperty(obj, propertyName)
 		}
-		return res
+    return res
 	}
 
 	def _filteredList(){
@@ -473,7 +474,7 @@ class PlasticCriteria {
 
 	def get(clos) {
 		def ls = list(clos)
-		return ls ? ls.first() : null
+    return ls ? ls.first() : null
 	}
 
 	def fetchMode(prop, fetchType) {
