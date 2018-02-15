@@ -96,6 +96,10 @@ class PlasticCriteria {
 		_maxRes = limit
 	}
 
+	def firstResult(offset){
+		_offset = offset
+	}
+
 	def distinct(prop){
 		_distinctProp = prop
 	}
