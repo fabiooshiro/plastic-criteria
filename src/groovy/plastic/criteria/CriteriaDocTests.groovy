@@ -966,4 +966,23 @@ class CriteriaDocTests {
     assert result[1] == [portinari?.id, 2]
     assert result[2] == [diCavalcanti?.id, 1]
 	}
+
+	void test_firstResult() {
+		def monet = new Artist(name: 'Monet').save()
+		new Portrait(artist: monet, name: 'Soleil levant 1').save()
+		new Portrait(artist: monet, name: 'Soleil levant 2').save()
+		new Portrait(artist: monet, name: 'Soleil levant 3').save()
+		new Portrait(artist: monet, name: 'Soleil levant 4').save()
+		new Portrait(artist: monet, name: 'Soleil levant 5').save()
+		new Portrait(artist: monet, name: 'Soleil levant 6').save()
+		new Portrait(artist: monet, name: 'Soleil levant 7').save()
+		def rs = Portrait.withCriteria {
+			firstResult(3)
+			maxResults(3)
+		}
+		assert 3 == rs.size()
+		assert 'Soleil levant 4' == rs[0].name
+		assert 'Soleil levant 5' == rs[1].name
+		assert 'Soleil levant 6' == rs[2].name
+	}
 }
